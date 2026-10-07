@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- No start and no end event. Expect STR-001 and STR-002, and no flood of STR-005/STR-006. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:task id="A" name="Receive invoice"/>
+    <bpmn:task id="B" name="Pay invoice"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="A" targetRef="B"/>
+  </bpmn:process>
+</bpmn:definitions>

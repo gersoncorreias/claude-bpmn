@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Definitions_ExpenseClaim">
+  <!-- Deliberately flawed example for the bpmn-coach walkthrough in examples/README.md. Do not copy. -->
+  <bpmn:collaboration id="Collab_ExpenseClaim">
+    <bpmn:participant id="Pool_Expense" name="Expense Claim" processRef="Process_Expense"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Expense" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Expense">
+      <bpmn:lane id="Lane_Employee" name="Employee">
+        <bpmn:flowNodeRef>Start_Expense</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Submit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Return</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Manager" name="Manager">
+        <bpmn:flowNodeRef>Task_Review</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Decision</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Finance" name="Finance">
+        <bpmn:flowNodeRef>Task_Reimburse</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Paid</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Expense" name="Expense incurred"><bpmn:outgoing>Flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="Task_Submit" name="Submit expense claim"><bpmn:incoming>Flow_1</bpmn:incoming><bpmn:outgoing>Flow_2</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Return" name="Revise expense claim"><bpmn:incoming>Flow_4</bpmn:incoming></bpmn:task>
+    <bpmn:task id="Task_Review" name="Claim review"><bpmn:incoming>Flow_2</bpmn:incoming><bpmn:outgoing>Flow_3</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_Decision" name="Decision"><bpmn:incoming>Flow_3</bpmn:incoming><bpmn:outgoing>Flow_4</bpmn:outgoing><bpmn:outgoing>Flow_5</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Reimburse" name="Reimburse employee"><bpmn:incoming>Flow_5</bpmn:incoming><bpmn:outgoing>Flow_6</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Paid" name="Claim paid"><bpmn:incoming>Flow_6</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_Expense" targetRef="Task_Submit"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Submit" targetRef="Task_Review"/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_Review" targetRef="Gw_Decision"/>
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Gw_Decision" targetRef="Task_Return"/>
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Gw_Decision" targetRef="Task_Reimburse"/>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Reimburse" targetRef="End_Paid"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_ExpenseClaim">
+    <bpmndi:BPMNPlane id="Plane_ExpenseClaim" bpmnElement="Collab_ExpenseClaim">
+      <bpmndi:BPMNShape id="Pool_Expense_di" bpmnElement="Pool_Expense" isHorizontal="true"><dc:Bounds x="160" y="80" width="1000" height="420"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Employee_di" bpmnElement="Lane_Employee" isHorizontal="true"><dc:Bounds x="190" y="80" width="970" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Lane_Manager" isHorizontal="true"><dc:Bounds x="190" y="220" width="970" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Finance_di" bpmnElement="Lane_Finance" isHorizontal="true"><dc:Bounds x="190" y="360" width="970" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Expense_di" bpmnElement="Start_Expense"><dc:Bounds x="262" y="132" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Submit_di" bpmnElement="Task_Submit"><dc:Bounds x="380" y="110" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Return_di" bpmnElement="Task_Return"><dc:Bounds x="680" y="110" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Review_di" bpmnElement="Task_Review"><dc:Bounds x="530" y="250" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Decision_di" bpmnElement="Gw_Decision" isMarkerVisible="true"><dc:Bounds x="705" y="265" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="650" y="245" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Reimburse_di" bpmnElement="Task_Reimburse"><dc:Bounds x="830" y="390" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Paid_di" bpmnElement="End_Paid"><dc:Bounds x="1012" y="412" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1"><di:waypoint x="298" y="150"/><di:waypoint x="380" y="150"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2"><di:waypoint x="480" y="150"/><di:waypoint x="505" y="150"/><di:waypoint x="505" y="290"/><di:waypoint x="530" y="290"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3"><di:waypoint x="630" y="290"/><di:waypoint x="705" y="290"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4"><di:waypoint x="730" y="265"/><di:waypoint x="730" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5"><di:waypoint x="730" y="315"/><di:waypoint x="730" y="430"/><di:waypoint x="830" y="430"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6"><di:waypoint x="930" y="430"/><di:waypoint x="1012" y="430"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

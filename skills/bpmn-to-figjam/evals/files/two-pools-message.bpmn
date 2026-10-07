@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  targetNamespace="http://example.com/bpmn"
+  id="Definitions_3">
+
+  <bpmn:collaboration id="Collab_1">
+    <bpmn:participant id="Pool_Customer" name="Customer" processRef="Process_Customer"/>
+    <bpmn:participant id="Pool_Support" name="Support Team" processRef="Process_Support"/>
+    <bpmn:messageFlow id="MF1" sourceRef="T_SubmitTicket" targetRef="SE_TicketReceived" name="Ticket"/>
+    <bpmn:messageFlow id="MF2" sourceRef="T_SendResolution" targetRef="SE_ResolutionReceived" name="Resolution"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Customer" isExecutable="false">
+    <bpmn:startEvent id="SE_Issue" name="Issue Occurs">
+      <bpmn:outgoing>SF_C1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="T_SubmitTicket" name="Submit Support Ticket">
+      <bpmn:incoming>SF_C1</bpmn:incoming>
+      <bpmn:outgoing>SF_C2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="SE_ResolutionReceived" name="Receive Resolution">
+      <bpmn:incoming>SF_C2</bpmn:incoming>
+      <bpmn:outgoing>SF_C3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EE_CustomerDone" name="Issue Resolved">
+      <bpmn:incoming>SF_C3</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="SF_C1" sourceRef="SE_Issue" targetRef="T_SubmitTicket"/>
+    <bpmn:sequenceFlow id="SF_C2" sourceRef="T_SubmitTicket" targetRef="SE_ResolutionReceived"/>
+    <bpmn:sequenceFlow id="SF_C3" sourceRef="SE_ResolutionReceived" targetRef="EE_CustomerDone"/>
+  </bpmn:process>
+
+  <bpmn:process id="Process_Support" isExecutable="false">
+    <bpmn:startEvent id="SE_TicketReceived" name="Ticket Received">
+      <bpmn:outgoing>SF_S1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="T_Triage" name="Triage Ticket">
+      <bpmn:incoming>SF_S1</bpmn:incoming>
+      <bpmn:outgoing>SF_S2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_Investigate" name="Investigate Issue">
+      <bpmn:incoming>SF_S2</bpmn:incoming>
+      <bpmn:outgoing>SF_S3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_SendResolution" name="Send Resolution">
+      <bpmn:incoming>SF_S3</bpmn:incoming>
+      <bpmn:outgoing>SF_S4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EE_SupportDone" name="Ticket Closed">
+      <bpmn:incoming>SF_S4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="SF_S1" sourceRef="SE_TicketReceived" targetRef="T_Triage"/>
+    <bpmn:sequenceFlow id="SF_S2" sourceRef="T_Triage" targetRef="T_Investigate"/>
+    <bpmn:sequenceFlow id="SF_S3" sourceRef="T_Investigate" targetRef="T_SendResolution"/>
+    <bpmn:sequenceFlow id="SF_S4" sourceRef="T_SendResolution" targetRef="EE_SupportDone"/>
+  </bpmn:process>
+
+</bpmn:definitions>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Expect NM-001 (Task_3 named after its id, and an unnamed task), NM-004 (unnamed start and end),
+       GW-002 (Pointless: one in, one out), GW-005 (inclusive with two paths), GW-006 (Channels is not a question). -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S"/>
+    <bpmn:task id="Task_3" name="Task_3"/>
+    <bpmn:exclusiveGateway id="Pointless" name="Go on?"/>
+    <bpmn:inclusiveGateway id="Channels" name="Notify channels"/>
+    <bpmn:task id="Mail" name="Send email"/>
+    <bpmn:task id="Unnamed"/>
+    <bpmn:inclusiveGateway id="Join"/>
+    <bpmn:endEvent id="E"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="Task_3"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="Task_3" targetRef="Pointless"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="Pointless" targetRef="Channels"/>
+    <bpmn:sequenceFlow id="f4" name="Email" sourceRef="Channels" targetRef="Mail"/>
+    <bpmn:sequenceFlow id="f5" name="SMS" sourceRef="Channels" targetRef="Unnamed"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="Mail" targetRef="Join"/>
+    <bpmn:sequenceFlow id="f7" sourceRef="Unnamed" targetRef="Join"/>
+    <bpmn:sequenceFlow id="f8" sourceRef="Join" targetRef="E"/>
+  </bpmn:process>
+</bpmn:definitions>

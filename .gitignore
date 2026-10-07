@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+node_modules/
+
+# Diagrams you generate while trying the skills
+/*.bpmn

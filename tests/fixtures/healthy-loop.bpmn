@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- The same rework loop with an exit and a merge in front of Review. Expect only DI-001 (no layout). -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Draft ready"/>
+    <bpmn:exclusiveGateway id="M"/>
+    <bpmn:task id="Review" name="Review draft"/>
+    <bpmn:exclusiveGateway id="G" name="Approved?"/>
+    <bpmn:task id="Fix" name="Fix draft"/>
+    <bpmn:endEvent id="E" name="Draft approved"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="M"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="M" targetRef="Review"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="Review" targetRef="G"/>
+    <bpmn:sequenceFlow id="f4" name="Yes" sourceRef="G" targetRef="E"/>
+    <bpmn:sequenceFlow id="f5" name="No" sourceRef="G" targetRef="Fix"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="Fix" targetRef="M"/>
+  </bpmn:process>
+</bpmn:definitions>

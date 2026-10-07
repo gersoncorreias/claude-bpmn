@@ -1,0 +1,12 @@
+{
+  "name": "claude-bpmn-bpmnio-check",
+  "private": true,
+  "description": "Checks that every .bpmn file in the repo parses cleanly with bpmn-moddle, the parser bpmn.io and Camunda Modeler use.",
+  "type": "module",
+  "scripts": {
+    "check": "node check.mjs"
+  },
+  "dependencies": {
+    "bpmn-moddle": "10.3.1"
+  }
+}

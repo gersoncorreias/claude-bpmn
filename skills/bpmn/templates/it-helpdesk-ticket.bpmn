@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Definitions_ItHelpdesk">
+  <!-- Example: IT helpdesk ticket, from submission to resolution. Generic sample for the bpmn skill. -->
+  <bpmn:collaboration id="Collab_ItHelpdesk">
+    <bpmn:participant id="Pool_Helpdesk" name="IT Helpdesk Ticket" processRef="Process_Helpdesk"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Helpdesk" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Helpdesk">
+      <bpmn:lane id="Lane_ServiceDesk" name="Service Desk">
+        <bpmn:flowNodeRef>Start_Ticket</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Categorize</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Urgent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Page</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Queue</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Assign</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Engineer" name="IT Engineer">
+        <bpmn:flowNodeRef>Task_Investigate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Timer_Sla</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Blocked</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Resolve</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Resolved</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Manager" name="IT Manager">
+        <bpmn:flowNodeRef>Task_Reassign</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Notify</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Notified</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Ticket" name="Ticket submitted"><bpmn:outgoing>Flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="Task_Categorize" name="Categorize and prioritize ticket"><bpmn:incoming>Flow_1</bpmn:incoming><bpmn:outgoing>Flow_2</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_Urgent" name="Urgent?"><bpmn:incoming>Flow_2</bpmn:incoming><bpmn:outgoing>Flow_3</bpmn:outgoing><bpmn:outgoing>Flow_4</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Page" name="Page on-call engineer"><bpmn:incoming>Flow_3</bpmn:incoming><bpmn:outgoing>Flow_5</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Queue" name="Add to engineer queue"><bpmn:incoming>Flow_4</bpmn:incoming><bpmn:outgoing>Flow_6</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_Merge" name=""><bpmn:incoming>Flow_5</bpmn:incoming><bpmn:incoming>Flow_6</bpmn:incoming><bpmn:incoming>Flow_13</bpmn:incoming><bpmn:outgoing>Flow_7</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Assign" name="Assign engineer"><bpmn:incoming>Flow_7</bpmn:incoming><bpmn:outgoing>Flow_8</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Investigate" name="Investigate issue"><bpmn:incoming>Flow_8</bpmn:incoming><bpmn:outgoing>Flow_9</bpmn:outgoing></bpmn:task>
+    <bpmn:boundaryEvent id="Timer_Sla" name="SLA breached" attachedToRef="Task_Investigate" cancelActivity="false"><bpmn:outgoing>Flow_14</bpmn:outgoing><bpmn:timerEventDefinition id="Timer_Timer_Sla"><bpmn:timeDuration xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">PT8H</bpmn:timeDuration></bpmn:timerEventDefinition></bpmn:boundaryEvent>
+    <bpmn:exclusiveGateway id="Gw_Blocked" name="Blocked?"><bpmn:incoming>Flow_9</bpmn:incoming><bpmn:outgoing>Flow_10</bpmn:outgoing><bpmn:outgoing>Flow_12</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Resolve" name="Resolve issue"><bpmn:incoming>Flow_10</bpmn:incoming><bpmn:outgoing>Flow_11</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Resolved" name="Ticket resolved"><bpmn:incoming>Flow_11</bpmn:incoming></bpmn:endEvent>
+    <bpmn:task id="Task_Reassign" name="Reassign or extend deadline"><bpmn:incoming>Flow_12</bpmn:incoming><bpmn:outgoing>Flow_13</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Notify" name="Review SLA breach"><bpmn:incoming>Flow_14</bpmn:incoming><bpmn:outgoing>Flow_15</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Notified" name="Breach reviewed"><bpmn:incoming>Flow_15</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_Ticket" targetRef="Task_Categorize"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Categorize" targetRef="Gw_Urgent"/>
+    <bpmn:sequenceFlow id="Flow_3" name="Yes" sourceRef="Gw_Urgent" targetRef="Task_Page"/>
+    <bpmn:sequenceFlow id="Flow_4" name="No" sourceRef="Gw_Urgent" targetRef="Task_Queue"/>
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_Page" targetRef="Gw_Merge"/>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Queue" targetRef="Gw_Merge"/>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Gw_Merge" targetRef="Task_Assign"/>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_Assign" targetRef="Task_Investigate"/>
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Task_Investigate" targetRef="Gw_Blocked"/>
+    <bpmn:sequenceFlow id="Flow_10" name="No" sourceRef="Gw_Blocked" targetRef="Task_Resolve"/>
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="Task_Resolve" targetRef="End_Resolved"/>
+    <bpmn:sequenceFlow id="Flow_12" name="Yes" sourceRef="Gw_Blocked" targetRef="Task_Reassign"/>
+    <bpmn:sequenceFlow id="Flow_13" sourceRef="Task_Reassign" targetRef="Gw_Merge"/>
+    <bpmn:sequenceFlow id="Flow_14" sourceRef="Timer_Sla" targetRef="Task_Notify"/>
+    <bpmn:sequenceFlow id="Flow_15" sourceRef="Task_Notify" targetRef="End_Notified"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_ItHelpdesk">
+    <bpmndi:BPMNPlane id="Plane_ItHelpdesk" bpmnElement="Collab_ItHelpdesk">
+      <bpmndi:BPMNShape id="Pool_Helpdesk_di" bpmnElement="Pool_Helpdesk" isHorizontal="true"><dc:Bounds x="160" y="80" width="1400" height="660"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ServiceDesk_di" bpmnElement="Lane_ServiceDesk" isHorizontal="true"><dc:Bounds x="190" y="80" width="1370" height="220"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Engineer_di" bpmnElement="Lane_Engineer" isHorizontal="true"><dc:Bounds x="190" y="300" width="1370" height="200"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Lane_Manager" isHorizontal="true"><dc:Bounds x="190" y="500" width="1370" height="240"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Ticket_di" bpmnElement="Start_Ticket"><dc:Bounds x="262" y="172" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Categorize_di" bpmnElement="Task_Categorize"><dc:Bounds x="380" y="150" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Urgent_di" bpmnElement="Gw_Urgent" isMarkerVisible="true"><dc:Bounds x="555" y="165" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="500" y="145" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Page_di" bpmnElement="Task_Page"><dc:Bounds x="680" y="95" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Queue_di" bpmnElement="Task_Queue"><dc:Bounds x="680" y="205" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Merge_di" bpmnElement="Gw_Merge" isMarkerVisible="true"><dc:Bounds x="855" y="165" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Assign_di" bpmnElement="Task_Assign"><dc:Bounds x="980" y="150" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Investigate_di" bpmnElement="Task_Investigate"><dc:Bounds x="980" y="340" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Blocked_di" bpmnElement="Gw_Blocked" isMarkerVisible="true"><dc:Bounds x="1155" y="355" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="1100" y="335" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Resolve_di" bpmnElement="Task_Resolve"><dc:Bounds x="1280" y="340" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Resolved_di" bpmnElement="End_Resolved"><dc:Bounds x="1462" y="362" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Reassign_di" bpmnElement="Task_Reassign"><dc:Bounds x="1280" y="520" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Notify_di" bpmnElement="Task_Notify"><dc:Bounds x="980" y="620" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Notified_di" bpmnElement="End_Notified"><dc:Bounds x="1162" y="642" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Sla_di" bpmnElement="Timer_Sla"><dc:Bounds x="982" y="402" width="36" height="36"/><bpmndi:BPMNLabel><dc:Bounds x="908" y="434" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1"><di:waypoint x="298" y="190"/><di:waypoint x="380" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2"><di:waypoint x="480" y="190"/><di:waypoint x="555" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3"><di:waypoint x="580" y="165"/><di:waypoint x="580" y="135"/><di:waypoint x="680" y="135"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4"><di:waypoint x="580" y="215"/><di:waypoint x="580" y="245"/><di:waypoint x="680" y="245"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5"><di:waypoint x="780" y="135"/><di:waypoint x="880" y="135"/><di:waypoint x="880" y="165"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6"><di:waypoint x="780" y="245"/><di:waypoint x="820" y="245"/><di:waypoint x="820" y="190"/><di:waypoint x="855" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7"><di:waypoint x="905" y="190"/><di:waypoint x="980" y="190"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8"><di:waypoint x="1030" y="230"/><di:waypoint x="1030" y="340"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9"><di:waypoint x="1080" y="380"/><di:waypoint x="1155" y="380"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10"><di:waypoint x="1205" y="380"/><di:waypoint x="1280" y="380"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11"><di:waypoint x="1380" y="380"/><di:waypoint x="1462" y="380"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12"><di:waypoint x="1180" y="405"/><di:waypoint x="1180" y="560"/><di:waypoint x="1280" y="560"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13_di" bpmnElement="Flow_13"><di:waypoint x="1330" y="600"/><di:waypoint x="1330" y="725"/><di:waypoint x="880" y="725"/><di:waypoint x="880" y="215"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14_di" bpmnElement="Flow_14"><di:waypoint x="1000" y="438"/><di:waypoint x="1000" y="620"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15_di" bpmnElement="Flow_15"><di:waypoint x="1080" y="660"/><di:waypoint x="1162" y="660"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

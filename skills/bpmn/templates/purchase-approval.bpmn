@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Definitions_PurchaseApproval">
+  <!-- Example: purchase request approval with a parallel split and an external supplier. Generic sample. -->
+  <bpmn:collaboration id="Collab_PurchaseApproval">
+    <bpmn:participant id="Pool_Purchase" name="Purchase Request" processRef="Process_Purchase"/>
+    <bpmn:participant id="Pool_Supplier" name="Supplier"/>
+    <bpmn:messageFlow id="Msg_Order" name="Purchase order" sourceRef="Task_Send" targetRef="Pool_Supplier"/>
+    <bpmn:messageFlow id="Msg_Goods" name="Goods and invoice" sourceRef="Pool_Supplier" targetRef="Task_Receive"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Purchase" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Purchase">
+      <bpmn:lane id="Lane_Employee" name="Employee">
+        <bpmn:flowNodeRef>Start_Need</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Submit</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Manager" name="Manager">
+        <bpmn:flowNodeRef>Task_Review</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Rejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Procurement" name="Procurement">
+        <bpmn:flowNodeRef>Gw_Split</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Order</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Budget</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Join</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Send</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Receive</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Received</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Need" name="Purchase needed"><bpmn:outgoing>Flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:userTask id="Task_Submit" name="Submit purchase request"><bpmn:incoming>Flow_1</bpmn:incoming><bpmn:outgoing>Flow_2</bpmn:outgoing></bpmn:userTask>
+    <bpmn:userTask id="Task_Review" name="Review request"><bpmn:incoming>Flow_2</bpmn:incoming><bpmn:outgoing>Flow_3</bpmn:outgoing></bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gw_Approved" name="Approved?"><bpmn:incoming>Flow_3</bpmn:incoming><bpmn:outgoing>Flow_4</bpmn:outgoing><bpmn:outgoing>Flow_5</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_Rejected" name="Request rejected"><bpmn:incoming>Flow_4</bpmn:incoming></bpmn:endEvent>
+    <bpmn:parallelGateway id="Gw_Split" name=""><bpmn:incoming>Flow_5</bpmn:incoming><bpmn:outgoing>Flow_6</bpmn:outgoing><bpmn:outgoing>Flow_7</bpmn:outgoing></bpmn:parallelGateway>
+    <bpmn:task id="Task_Order" name="Create purchase order"><bpmn:incoming>Flow_6</bpmn:incoming><bpmn:outgoing>Flow_8</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Task_Budget" name="Reserve budget"><bpmn:incoming>Flow_7</bpmn:incoming><bpmn:outgoing>Flow_9</bpmn:outgoing></bpmn:task>
+    <bpmn:parallelGateway id="Gw_Join" name=""><bpmn:incoming>Flow_8</bpmn:incoming><bpmn:incoming>Flow_9</bpmn:incoming><bpmn:outgoing>Flow_10</bpmn:outgoing></bpmn:parallelGateway>
+    <bpmn:sendTask id="Task_Send" name="Send order to supplier"><bpmn:incoming>Flow_10</bpmn:incoming><bpmn:outgoing>Flow_11</bpmn:outgoing></bpmn:sendTask>
+    <bpmn:receiveTask id="Task_Receive" name="Receive goods"><bpmn:incoming>Flow_11</bpmn:incoming><bpmn:outgoing>Flow_12</bpmn:outgoing></bpmn:receiveTask>
+    <bpmn:endEvent id="End_Received" name="Goods received"><bpmn:incoming>Flow_12</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_Need" targetRef="Task_Submit"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Submit" targetRef="Task_Review"/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_Review" targetRef="Gw_Approved"/>
+    <bpmn:sequenceFlow id="Flow_4" name="No" sourceRef="Gw_Approved" targetRef="End_Rejected"/>
+    <bpmn:sequenceFlow id="Flow_5" name="Yes" sourceRef="Gw_Approved" targetRef="Gw_Split"/>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Gw_Split" targetRef="Task_Order"/>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Gw_Split" targetRef="Task_Budget"/>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_Order" targetRef="Gw_Join"/>
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Task_Budget" targetRef="Gw_Join"/>
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="Gw_Join" targetRef="Task_Send"/>
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="Task_Send" targetRef="Task_Receive"/>
+    <bpmn:sequenceFlow id="Flow_12" sourceRef="Task_Receive" targetRef="End_Received"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_PurchaseApproval">
+    <bpmndi:BPMNPlane id="Plane_PurchaseApproval" bpmnElement="Collab_PurchaseApproval">
+      <bpmndi:BPMNShape id="Pool_Purchase_di" bpmnElement="Pool_Purchase" isHorizontal="true"><dc:Bounds x="160" y="80" width="1540" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Employee_di" bpmnElement="Lane_Employee" isHorizontal="true"><dc:Bounds x="190" y="80" width="1510" height="130"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Lane_Manager" isHorizontal="true"><dc:Bounds x="190" y="210" width="1510" height="150"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Procurement_di" bpmnElement="Lane_Procurement" isHorizontal="true"><dc:Bounds x="190" y="360" width="1510" height="230"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pool_Supplier_di" bpmnElement="Pool_Supplier" isHorizontal="true"><dc:Bounds x="160" y="660" width="1540" height="90"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Need_di" bpmnElement="Start_Need"><dc:Bounds x="262" y="127" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Submit_di" bpmnElement="Task_Submit"><dc:Bounds x="380" y="105" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Review_di" bpmnElement="Task_Review"><dc:Bounds x="530" y="245" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Approved_di" bpmnElement="Gw_Approved" isMarkerVisible="true"><dc:Bounds x="705" y="260" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="650" y="240" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Rejected_di" bpmnElement="End_Rejected"><dc:Bounds x="862" y="267" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Split_di" bpmnElement="Gw_Split"><dc:Bounds x="855" y="450" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Order_di" bpmnElement="Task_Order"><dc:Bounds x="980" y="380" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Budget_di" bpmnElement="Task_Budget"><dc:Bounds x="980" y="490" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Join_di" bpmnElement="Gw_Join"><dc:Bounds x="1155" y="450" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Send_di" bpmnElement="Task_Send"><dc:Bounds x="1280" y="435" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Receive_di" bpmnElement="Task_Receive"><dc:Bounds x="1430" y="435" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Received_di" bpmnElement="End_Received"><dc:Bounds x="1612" y="457" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1"><di:waypoint x="298" y="145"/><di:waypoint x="380" y="145"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2"><di:waypoint x="480" y="145"/><di:waypoint x="505" y="145"/><di:waypoint x="505" y="285"/><di:waypoint x="530" y="285"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3"><di:waypoint x="630" y="285"/><di:waypoint x="705" y="285"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4"><di:waypoint x="755" y="285"/><di:waypoint x="862" y="285"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5"><di:waypoint x="730" y="310"/><di:waypoint x="730" y="475"/><di:waypoint x="855" y="475"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6"><di:waypoint x="880" y="450"/><di:waypoint x="880" y="420"/><di:waypoint x="980" y="420"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7"><di:waypoint x="880" y="500"/><di:waypoint x="880" y="530"/><di:waypoint x="980" y="530"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8"><di:waypoint x="1080" y="420"/><di:waypoint x="1180" y="420"/><di:waypoint x="1180" y="450"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9"><di:waypoint x="1080" y="530"/><di:waypoint x="1180" y="530"/><di:waypoint x="1180" y="500"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10"><di:waypoint x="1205" y="475"/><di:waypoint x="1280" y="475"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11"><di:waypoint x="1380" y="475"/><di:waypoint x="1430" y="475"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12"><di:waypoint x="1530" y="475"/><di:waypoint x="1612" y="475"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_Order_di" bpmnElement="Msg_Order"><di:waypoint x="1330" y="515"/><di:waypoint x="1330" y="660"/><bpmndi:BPMNLabel><dc:Bounds x="1338" y="618" width="110" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Msg_Goods_di" bpmnElement="Msg_Goods"><di:waypoint x="1480" y="660"/><di:waypoint x="1480" y="515"/><bpmndi:BPMNLabel><dc:Bounds x="1488" y="618" width="110" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

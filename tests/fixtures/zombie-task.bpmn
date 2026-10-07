@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Zombie task: copied in and forgotten, no flows and no shape. Expect STR-005 and DI-001 on Zombie only. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Start"/>
+    <bpmn:task id="T" name="Do the work"/>
+    <bpmn:task id="Zombie" name="Old step"/>
+    <bpmn:endEvent id="E" name="Done"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="T"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="T" targetRef="E"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="D"><bpmndi:BPMNPlane id="PL" bpmnElement="P">
+    <bpmndi:BPMNShape id="S_di" bpmnElement="S"><dc:Bounds x="100" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="T_di" bpmnElement="T"><dc:Bounds x="200" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="E_di" bpmnElement="E"><dc:Bounds x="360" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="f1_di" bpmnElement="f1"><di:waypoint x="136" y="118"/><di:waypoint x="200" y="118"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f2_di" bpmnElement="f2"><di:waypoint x="300" y="118"/><di:waypoint x="360" y="118"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

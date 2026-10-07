@@ -1,0 +1,87 @@
+{
+  "skill_name": "bpmn-to-figjam",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a BPMN file at evals/files/linear-3tasks.bpmn. Can you convert it to FigJam? My board is at https://www.figma.com/board/TESTKEY001/test-board",
+      "expected_output": "The skill parses the BPMN (1 start event, 3 tasks, 1 end event, 4 sequence flows). The file has no layout section, so it computes a left-to-right layout. It creates a section named 'BPMN: <process name>' to the right of existing content, draws the shapes inside it with the bpmn.io default colors (light green start, white tasks, light red end with a thick border), wires 4 connectors, and calls use_figma with fileKey=TESTKEY001. It reports the element counts at the end.",
+      "files": ["evals/files/linear-3tasks.bpmn"],
+      "assertions": [
+        "The skill extracts fileKey 'TESTKEY001' from the provided FigJam URL before generating any code",
+        "The generated JavaScript calls figma.loadFontAsync before setting any text",
+        "The generated JavaScript creates a section with figma.createSection() and appends the diagram nodes to it, not to the page",
+        "The generated JavaScript does not call remove() on any existing board node",
+        "The generated JavaScript includes a ROUNDED_RECTANGLE shape for each of the 3 tasks",
+        "The start event shape uses the light green fill #c8e6c9 (r~0.784, g~0.902, b~0.788)",
+        "The end event shape uses the light red fill #ffcdd2 (r~1.0, g~0.804, b~0.824) and strokeWeight 4",
+        "The task shapes use a white fill (r=1, g=1, b=1)",
+        "The generated JavaScript includes 4 createConnector() calls for the 4 sequence flows",
+        "The skill calls use_figma with fileKey='TESTKEY001'",
+        "The final report states: Tasks: 3, Events: 2 (or Start: 1, End: 1), Flows: 4"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Please import this BPMN into FigJam — https://www.figma.com/board/TESTKEY002/approval-flow. The file is at evals/files/exclusive-gateway.bpmn",
+      "expected_output": "The skill parses the BPMN (1 start event, 3 tasks, 1 exclusive gateway, 1 end event, 6 sequence flows, 2 of them labelled Yes and No). It draws the gateway as a white DIAMOND with an '×' marker and its name as an external label, labels the Yes/No connectors, and calls use_figma with fileKey=TESTKEY002.",
+      "files": ["evals/files/exclusive-gateway.bpmn"],
+      "assertions": [
+        "The skill extracts fileKey 'TESTKEY002' from the FigJam URL",
+        "The exclusive gateway is rendered as a DIAMOND shape",
+        "The exclusive gateway shape uses a white fill and contains the '×' marker as its text",
+        "The gateway name 'Approved?' is placed as an external text label, not inside the diamond",
+        "The connector from the gateway to 'Process Approval' is labelled 'Yes'",
+        "The connector from the gateway to 'Send Rejection Notice' is labelled 'No'",
+        "The generated JavaScript does not call remove() on any existing board node",
+        "The skill calls use_figma with fileKey='TESTKEY002'",
+        "The final report states Tasks: 3 and Gateways: 1"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want to visualize this process model in FigJam. File: evals/files/two-pools-message.bpmn. FigJam URL: https://www.figma.com/board/TESTKEY003/support-flow",
+      "expected_output": "The skill parses two pools (Customer and Support Team) with tasks in each, and 2 message flows (Ticket, Resolution). It renders both pools inside the new section, and draws the message flows as dashed purple connectors. It calls use_figma with fileKey=TESTKEY003 and reports Pools: 2, Message: 2.",
+      "files": ["evals/files/two-pools-message.bpmn"],
+      "assertions": [
+        "The skill extracts fileKey 'TESTKEY003' from the FigJam URL",
+        "The generated JavaScript renders nodes for both the Customer pool and the Support Team pool",
+        "Message flows are rendered with a dashed stroke (dashPattern [8, 4])",
+        "Message flows use a purple stroke, distinct from the dark sequence-flow stroke",
+        "The generated JavaScript does not call remove() on any existing board node",
+        "The skill calls use_figma with fileKey='TESTKEY003'",
+        "The final report mentions Pools: 2 and Message: 2"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Convert this BPMN to FigJam: evals/files/subprocess-mixed.bpmn. Board URL: https://www.figma.com/board/TESTKEY004/subprocess-test",
+      "expected_output": "The skill detects one collapsed sub-process (SP_Notify, no child elements) and one expanded sub-process (SP_Review, 4 child elements). The collapsed one is a dashed ROUNDED_RECTANGLE with a '+' marker at its bottom centre. The expanded one is a background rectangle with its label at top left and its children drawn on top. It uses the file's layout coordinates, translated into the section. It calls use_figma with fileKey=TESTKEY004 and reports Subprocesses: 2 (Expanded: 1, Collapsed: 1).",
+      "files": ["evals/files/subprocess-mixed.bpmn"],
+      "assertions": [
+        "The skill extracts fileKey 'TESTKEY004' from the FigJam URL",
+        "Shape positions come from the file's DI coordinates, offset by the same translation into the section",
+        "SP_Notify (collapsed) is rendered as a ROUNDED_RECTANGLE with dashPattern [6, 4]",
+        "A plus-marker shape (14×14 ROUNDED_RECTANGLE with '+' text) is appended immediately after SP_Notify",
+        "SP_Review (expanded) is rendered with createRectangle(), not createShapeWithText()",
+        "SP_Review's label is placed at the top left of the container (about 8px in from the left and 6px down from the top)",
+        "SP_Review's background rectangle is appended BEFORE its child task shapes",
+        "nodeMap[SP_Review.id] resolves to the background rectangle, so the SF2 and SF3 connectors attach to it",
+        "Child tasks T_CheckDocs and T_Validate are rendered as ROUNDED_RECTANGLEs inside SP_Review's bounds",
+        "The skill calls use_figma with fileKey='TESTKEY004'",
+        "The final report states Subprocesses: 2 (Expanded: 1, Collapsed: 1)"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Render evals/files/linear-3tasks.bpmn into https://www.figma.com/board/TESTKEY005/team-retro. Heads up, the board already has our retro sticky notes on it.",
+      "expected_output": "The skill leaves the sticky notes alone. It creates a new 'BPMN: <process name>' section to the right of the existing content and draws the diagram inside it. Nothing that already exists on the board is removed or moved.",
+      "files": ["evals/files/linear-3tasks.bpmn"],
+      "assertions": [
+        "The generated JavaScript computes the right edge of the existing page children and places the new section to the right of it",
+        "The generated JavaScript does not call remove() on any node, and does not loop over page.children to delete them",
+        "All diagram nodes are appended to the new section",
+        "The final report says existing board content was left untouched"
+      ]
+    }
+  ]
+}

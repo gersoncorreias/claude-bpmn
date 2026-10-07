@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  targetNamespace="http://example.com/bpmn"
+  id="Definitions_1">
+
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:startEvent id="SE_Start" name="Order Received">
+      <bpmn:outgoing>SF1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="T_Validate" name="Validate Order">
+      <bpmn:incoming>SF1</bpmn:incoming>
+      <bpmn:outgoing>SF2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_Process" name="Process Payment">
+      <bpmn:incoming>SF2</bpmn:incoming>
+      <bpmn:outgoing>SF3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_Ship" name="Ship Order">
+      <bpmn:incoming>SF3</bpmn:incoming>
+      <bpmn:outgoing>SF4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EE_End" name="Order Fulfilled">
+      <bpmn:incoming>SF4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="SF1" sourceRef="SE_Start" targetRef="T_Validate"/>
+    <bpmn:sequenceFlow id="SF2" sourceRef="T_Validate" targetRef="T_Process"/>
+    <bpmn:sequenceFlow id="SF3" sourceRef="T_Process" targetRef="T_Ship"/>
+    <bpmn:sequenceFlow id="SF4" sourceRef="T_Ship" targetRef="EE_End"/>
+  </bpmn:process>
+
+</bpmn:definitions>

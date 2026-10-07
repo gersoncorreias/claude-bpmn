@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Hanging parallel: the split never joins; each branch ends on its own. Expect GW-004. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Hire approved"/>
+    <bpmn:parallelGateway id="Split"/>
+    <bpmn:task id="A" name="Order laptop"/>
+    <bpmn:task id="B" name="Create accounts"/>
+    <bpmn:endEvent id="E1" name="Laptop ready"/>
+    <bpmn:endEvent id="E2" name="Accounts ready"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="Split"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="Split" targetRef="A"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="Split" targetRef="B"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="A" targetRef="E1"/>
+    <bpmn:sequenceFlow id="f5" sourceRef="B" targetRef="E2"/>
+  </bpmn:process>
+</bpmn:definitions>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Spaghetti gateway: one diamond merges three paths and splits into three unlabelled ones. Expect GW-001, GW-003, GW-006. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Order received"/>
+    <bpmn:exclusiveGateway id="G1" name="Order type?"/>
+    <bpmn:task id="A" name="Check stock"/>
+    <bpmn:task id="B" name="Check credit"/>
+    <bpmn:task id="C" name="Check address"/>
+    <bpmn:exclusiveGateway id="G2"/>
+    <bpmn:task id="X" name="Ship order"/>
+    <bpmn:task id="Y" name="Hold order"/>
+    <bpmn:task id="Z" name="Cancel order"/>
+    <bpmn:endEvent id="E" name="Order handled"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="G1"/>
+    <bpmn:sequenceFlow id="f2" name="Retail" sourceRef="G1" targetRef="A"/>
+    <bpmn:sequenceFlow id="f3" name="Business" sourceRef="G1" targetRef="B"/>
+    <bpmn:sequenceFlow id="f4" name="Export" sourceRef="G1" targetRef="C"/>
+    <bpmn:sequenceFlow id="f5" sourceRef="A" targetRef="G2"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="B" targetRef="G2"/>
+    <bpmn:sequenceFlow id="f7" sourceRef="C" targetRef="G2"/>
+    <bpmn:sequenceFlow id="f8" sourceRef="G2" targetRef="X"/>
+    <bpmn:sequenceFlow id="f9" sourceRef="G2" targetRef="Y"/>
+    <bpmn:sequenceFlow id="f10" sourceRef="G2" targetRef="Z"/>
+    <bpmn:sequenceFlow id="f11" sourceRef="X" targetRef="E"/>
+    <bpmn:sequenceFlow id="f12" sourceRef="Y" targetRef="E"/>
+    <bpmn:sequenceFlow id="f13" sourceRef="Z" targetRef="E"/>
+  </bpmn:process>
+</bpmn:definitions>

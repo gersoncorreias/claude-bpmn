@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Layout mistakes. Expect DI-002 (f2 has no line), DI-003 (a shape for Ghost), DI-004 (B drawn on top of A),
+       DI-005 (E sticks out of the pool). -->
+  <bpmn:collaboration id="C"><bpmn:participant id="Pool" name="Team" processRef="P"/></bpmn:collaboration>
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Start"/>
+    <bpmn:task id="A" name="Draft text"/>
+    <bpmn:task id="B" name="Proofread text"/>
+    <bpmn:endEvent id="E" name="Done"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="A"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="A" targetRef="B"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="B" targetRef="E"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="D"><bpmndi:BPMNPlane id="PL" bpmnElement="C">
+    <bpmndi:BPMNShape id="Pool_di" bpmnElement="Pool" isHorizontal="true"><dc:Bounds x="50" y="50" width="500" height="200"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="S_di" bpmnElement="S"><dc:Bounds x="100" y="132" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="A_di" bpmnElement="A"><dc:Bounds x="200" y="110" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="B_di" bpmnElement="B"><dc:Bounds x="200" y="110" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="E_di" bpmnElement="E"><dc:Bounds x="530" y="132" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Ghost_di" bpmnElement="Ghost"><dc:Bounds x="400" y="110" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="f1_di" bpmnElement="f1"><di:waypoint x="136" y="150"/><di:waypoint x="200" y="150"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f3_di" bpmnElement="f3"><di:waypoint x="300" y="150"/><di:waypoint x="530" y="150"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

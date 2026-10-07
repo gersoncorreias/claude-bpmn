@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Rework loop with no way out: Review -> Fix -> Review forever. Expect SF-003, and STR-005 on the end event nothing can reach. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Draft ready"/>
+    <bpmn:task id="Review" name="Review draft"/>
+    <bpmn:task id="Fix" name="Fix draft"/>
+    <bpmn:endEvent id="E" name="Draft approved"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="Review"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="Review" targetRef="Fix"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="Fix" targetRef="Review"/>
+  </bpmn:process>
+</bpmn:definitions>

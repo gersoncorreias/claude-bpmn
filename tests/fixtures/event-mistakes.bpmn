@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Event mistakes. Expect EVT-001 (S1 has an incoming flow), EVT-002 (E1 has an outgoing flow),
+       EVT-003 (Timeout attached to a gateway, and a dead end: STR-006), EVT-004 (Wait has no trigger), EVT-005 (two untyped starts). -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S1" name="Request by email"/>
+    <bpmn:startEvent id="S2" name="Request by phone"/>
+    <bpmn:exclusiveGateway id="Merge"/>
+    <bpmn:task id="Log" name="Log request"/>
+    <bpmn:intermediateCatchEvent id="Wait" name="Wait"/>
+    <bpmn:boundaryEvent id="Timeout" name="Too slow" attachedToRef="Merge"><bpmn:timerEventDefinition id="TD"/></bpmn:boundaryEvent>
+    <bpmn:endEvent id="E1" name="Request logged"/>
+    <bpmn:task id="Archive" name="Archive request"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S1" targetRef="Merge"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="S2" targetRef="Merge"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="Merge" targetRef="Log"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="Log" targetRef="Wait"/>
+    <bpmn:sequenceFlow id="f5" sourceRef="Wait" targetRef="E1"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="E1" targetRef="Archive"/>
+    <bpmn:sequenceFlow id="f7" sourceRef="Archive" targetRef="S1"/>
+  </bpmn:process>
+</bpmn:definitions>

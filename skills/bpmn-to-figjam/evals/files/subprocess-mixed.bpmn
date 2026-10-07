@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             id="Definitions_1"
+             targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="Process_4" name="Claim Handling" isExecutable="false">
+
+    <bpmn:startEvent id="SE_Start" name="Claim Received">
+      <bpmn:outgoing>SF1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Collapsed subprocess: no child bpmn elements -->
+    <bpmn:subProcess id="SP_Notify" name="Notify Parties">
+      <bpmn:incoming>SF1</bpmn:incoming>
+      <bpmn:outgoing>SF2</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <!-- Expanded subprocess: has child bpmn elements -->
+    <bpmn:subProcess id="SP_Review" name="Review Claim">
+      <bpmn:incoming>SF2</bpmn:incoming>
+      <bpmn:outgoing>SF3</bpmn:outgoing>
+      <bpmn:startEvent id="SP_SE" name="Start Review">
+        <bpmn:outgoing>SP_SF1</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:task id="T_CheckDocs" name="Check Documents">
+        <bpmn:incoming>SP_SF1</bpmn:incoming>
+        <bpmn:outgoing>SP_SF2</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:task id="T_Validate" name="Validate Claim">
+        <bpmn:incoming>SP_SF2</bpmn:incoming>
+        <bpmn:outgoing>SP_SF3</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="SP_EE" name="Review Done">
+        <bpmn:incoming>SP_SF3</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SP_SF1" sourceRef="SP_SE" targetRef="T_CheckDocs"/>
+      <bpmn:sequenceFlow id="SP_SF2" sourceRef="T_CheckDocs" targetRef="T_Validate"/>
+      <bpmn:sequenceFlow id="SP_SF3" sourceRef="T_Validate" targetRef="SP_EE"/>
+    </bpmn:subProcess>
+
+    <bpmn:endEvent id="EE_End" name="Claim Processed">
+      <bpmn:incoming>SF3</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="SF1" sourceRef="SE_Start" targetRef="SP_Notify"/>
+    <bpmn:sequenceFlow id="SF2" sourceRef="SP_Notify" targetRef="SP_Review"/>
+    <bpmn:sequenceFlow id="SF3" sourceRef="SP_Review" targetRef="EE_End"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_4">
+
+      <bpmndi:BPMNShape id="SE_Start_di" bpmnElement="SE_Start">
+        <dc:Bounds x="162" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="148" y="125" width="64" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP_Notify_di" bpmnElement="SP_Notify">
+        <dc:Bounds x="248" y="62" width="120" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP_Review_di" bpmnElement="SP_Review" isExpanded="true">
+        <dc:Bounds x="420" y="30" width="340" height="200"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP_SE_di" bpmnElement="SP_SE">
+        <dc:Bounds x="452" y="112" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="436" y="155" width="68" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_CheckDocs_di" bpmnElement="T_CheckDocs">
+        <dc:Bounds x="528" y="90" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="T_Validate_di" bpmnElement="T_Validate">
+        <dc:Bounds x="658" y="90" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="SP_EE_di" bpmnElement="SP_EE">
+        <dc:Bounds x="710" y="152" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="696" y="195" width="64" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EE_End_di" bpmnElement="EE_End">
+        <dc:Bounds x="812" y="82" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="789" y="125" width="82" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="SF1_di" bpmnElement="SF1">
+        <di:waypoint x="198" y="100"/>
+        <di:waypoint x="248" y="102"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SF2_di" bpmnElement="SF2">
+        <di:waypoint x="368" y="102"/>
+        <di:waypoint x="420" y="102"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SF3_di" bpmnElement="SF3">
+        <di:waypoint x="760" y="130"/>
+        <di:waypoint x="812" y="100"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP_SF1_di" bpmnElement="SP_SF1">
+        <di:waypoint x="488" y="130"/>
+        <di:waypoint x="528" y="130"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP_SF2_di" bpmnElement="SP_SF2">
+        <di:waypoint x="628" y="130"/>
+        <di:waypoint x="658" y="130"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="SP_SF3_di" bpmnElement="SP_SF3">
+        <di:waypoint x="758" y="130"/>
+        <di:waypoint x="710" y="170"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>

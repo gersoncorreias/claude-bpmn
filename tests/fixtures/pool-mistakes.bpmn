@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Pool mistakes. Expect SF-001 (sequence flow from Customer into Shop), SF-004 (message flow inside Shop),
+       STR-003 (message flow to Nowhere), LP-001 (Bank points to a missing process), LP-002 (Shop has one lane). -->
+  <bpmn:collaboration id="C">
+    <bpmn:participant id="Customer" name="Customer" processRef="PC"/>
+    <bpmn:participant id="Shop" name="Shop" processRef="PS"/>
+    <bpmn:participant id="Bank" name="Bank" processRef="PB"/>
+    <bpmn:messageFlow id="m1" name="Packing list" sourceRef="Pack" targetRef="Ship"/>
+    <bpmn:messageFlow id="m2" name="Receipt" sourceRef="Ship" targetRef="Nowhere"/>
+  </bpmn:collaboration>
+  <bpmn:process id="PC" isExecutable="false">
+    <bpmn:startEvent id="CS" name="Wants product"/>
+    <bpmn:task id="Order" name="Place order"/>
+    <bpmn:endEvent id="CE" name="Order placed"/>
+    <bpmn:sequenceFlow id="c1" sourceRef="CS" targetRef="Order"/>
+    <bpmn:sequenceFlow id="c2" sourceRef="Order" targetRef="CE"/>
+    <bpmn:sequenceFlow id="cross" sourceRef="Order" targetRef="Pack"/>
+  </bpmn:process>
+  <bpmn:process id="PS" isExecutable="false">
+    <bpmn:laneSet id="LS"><bpmn:lane id="L" name="Warehouse"><bpmn:flowNodeRef>SS</bpmn:flowNodeRef><bpmn:flowNodeRef>Pack</bpmn:flowNodeRef><bpmn:flowNodeRef>Ship</bpmn:flowNodeRef><bpmn:flowNodeRef>SE</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet>
+    <bpmn:startEvent id="SS" name="Order received"/>
+    <bpmn:task id="Pack" name="Pack order"/>
+    <bpmn:task id="Ship" name="Ship order"/>
+    <bpmn:endEvent id="SE" name="Order shipped"/>
+    <bpmn:sequenceFlow id="s1" sourceRef="SS" targetRef="Pack"/>
+    <bpmn:sequenceFlow id="s2" sourceRef="Pack" targetRef="Ship"/>
+    <bpmn:sequenceFlow id="s3" sourceRef="Ship" targetRef="SE"/>
+  </bpmn:process>
+</bpmn:definitions>

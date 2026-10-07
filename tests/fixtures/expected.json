@@ -1,0 +1,18 @@
+{
+  "broken-references.bpmn": {"exit": 1, "findings": [["DI-001", null], ["STR-003", "f3"], ["STR-004", "L1"], ["STR-005", "E"], ["STR-005", "Pay"], ["STR-006", "Check"], ["STR-007", "Pay"], ["STR-008", "Check"]]},
+  "dead-end.bpmn": {"exit": 1, "findings": [["DI-001", null], ["STR-006", "Escalate"]]},
+  "endless-loop.bpmn": {"exit": 1, "findings": [["DI-001", null], ["SF-003", "Fix"], ["STR-005", "E"]]},
+  "event-mistakes.bpmn": {"exit": 1, "findings": [["DI-001", null], ["EVT-001", "S1"], ["EVT-002", "E1"], ["EVT-003", "Timeout"], ["EVT-004", "Wait"], ["EVT-005", "S2"], ["STR-006", "Timeout"]]},
+  "flow-without-id.bpmn": {"exit": 1, "findings": [["DI-001", null], ["SF-002", null]]},
+  "hanging-parallel.bpmn": {"exit": 0, "findings": [["DI-001", null], ["GW-004", "Split"]]},
+  "healthy-loop.bpmn": {"exit": 0, "findings": [["DI-001", null]]},
+  "layout-mistakes.bpmn": {"exit": 0, "findings": [["DI-002", "f2"], ["DI-003", "Ghost"], ["DI-004", "B"], ["DI-005", "E"]]},
+  "link-and-subprocess.bpmn": {"exit": 0, "findings": [["DI-001", null]]},
+  "malformed.bpmn": {"exit": 2, "parse_error": true},
+  "missing-start-end.bpmn": {"exit": 1, "findings": [["DI-001", null], ["STR-001", "P"], ["STR-002", "P"]]},
+  "naming-and-gateways.bpmn": {"exit": 1, "findings": [["DI-001", null], ["GW-002", "Pointless"], ["GW-005", "Channels"], ["GW-006", "Channels"], ["NM-001", "Task_3"], ["NM-001", "Unnamed"], ["NM-004", "E"], ["NM-004", "S"]]},
+  "not-bpmn.bpmn": {"exit": 2, "parse_error": true},
+  "pool-mistakes.bpmn": {"exit": 1, "findings": [["DI-001", null], ["LP-001", "Bank"], ["LP-002", "Shop"], ["SF-001", "cross"], ["SF-004", "m1"], ["STR-003", "m2"]]},
+  "spaghetti-gateway.bpmn": {"exit": 0, "findings": [["DI-001", null], ["GW-001", "G2"], ["GW-003", "G2"], ["GW-006", "G2"]]},
+  "zombie-task.bpmn": {"exit": 1, "findings": [["DI-001", "Zombie"], ["STR-005", "Zombie"]]}
+}

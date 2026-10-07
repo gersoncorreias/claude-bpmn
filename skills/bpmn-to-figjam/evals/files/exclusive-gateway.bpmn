@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  targetNamespace="http://example.com/bpmn"
+  id="Definitions_2">
+
+  <bpmn:process id="Process_2" isExecutable="false">
+    <bpmn:startEvent id="SE_Start" name="Request Submitted">
+      <bpmn:outgoing>SF1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="T_Review" name="Review Request">
+      <bpmn:incoming>SF1</bpmn:incoming>
+      <bpmn:outgoing>SF2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GW_Approve" name="Approved?">
+      <bpmn:incoming>SF2</bpmn:incoming>
+      <bpmn:outgoing>SF3</bpmn:outgoing>
+      <bpmn:outgoing>SF4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="T_Approve" name="Process Approval">
+      <bpmn:incoming>SF3</bpmn:incoming>
+      <bpmn:outgoing>SF5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_Reject" name="Send Rejection Notice">
+      <bpmn:incoming>SF4</bpmn:incoming>
+      <bpmn:outgoing>SF6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EE_End" name="Request Closed">
+      <bpmn:incoming>SF5</bpmn:incoming>
+      <bpmn:incoming>SF6</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="SF1" sourceRef="SE_Start" targetRef="T_Review"/>
+    <bpmn:sequenceFlow id="SF2" sourceRef="T_Review" targetRef="GW_Approve"/>
+    <bpmn:sequenceFlow id="SF3" sourceRef="GW_Approve" targetRef="T_Approve" name="Yes"/>
+    <bpmn:sequenceFlow id="SF4" sourceRef="GW_Approve" targetRef="T_Reject" name="No"/>
+    <bpmn:sequenceFlow id="SF5" sourceRef="T_Approve" targetRef="EE_End"/>
+    <bpmn:sequenceFlow id="SF6" sourceRef="T_Reject" targetRef="EE_End"/>
+  </bpmn:process>
+
+</bpmn:definitions>

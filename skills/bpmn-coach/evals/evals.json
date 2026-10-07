@@ -1,0 +1,83 @@
+{
+  "skill_name": "bpmn-coach",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Validate evals/files/spaghetti-gateway.bpmn",
+      "expected_output": "The skill runs scripts/validate.py on the file. The report has no Must Fix section. Under Should Fix, it explains that the unnamed diamond after 'Check stock', 'Check credit' and 'Check address' both merges three paths and splits into three unlabelled ones. Under Consider Improving, it suggests phrasing that decision as a question. The verdict is 'Ready to share with minor improvements recommended'.",
+      "files": ["evals/files/spaghetti-gateway.bpmn"],
+      "assertions": [
+        "The skill runs scripts/validate.py on the file rather than checking the XML by hand",
+        "The report has no 'Must Fix' section",
+        "The merge-and-split problem (GW-001) and the unlabelled paths (GW-003) are reported under 'Should Fix'",
+        "The unnamed gateway is described by its neighbours (the decision after Check stock / Check credit / Check address), not by its id",
+        "The element id 'G2' does not appear in the report body",
+        "None of the words 'sequenceFlow', 'exclusiveGateway', 'DI section' or 'token' appear in the report",
+        "Rule IDs appear only as a parenthetical at the end of fix lines",
+        "The verdict line is the '⚠ Ready to share with minor improvements recommended' option",
+        "The report ends with the offer to fix it using /bpmn"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Is this BPMN correct? evals/files/zombie-task.bpmn",
+      "expected_output": "The report has a Must Fix block saying the 'Old step' task is not connected to anything, so the process never reaches it, and that it is also missing from the drawing. It suggests connecting or deleting it. The verdict is '❌ Issues found'.",
+      "files": ["evals/files/zombie-task.bpmn"],
+      "assertions": [
+        "The report has a 'Must Fix' section that names the step 'Old step'",
+        "The unreachable step (STR-005) and the missing shape (DI-001) are grouped into one block, because they have the same root cause",
+        "The fix tells the reader to connect 'Old step' to the flow or delete it",
+        "The id 'Zombie' does not appear in the report body",
+        "The verdict line is the '❌ Issues found' option"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check the task names in evals/files/noun-task-names.bpmn, and anything else that's wrong with it",
+      "expected_output": "The validator returns no findings and lists NM-002 under not_checked. The skill applies NM-002 itself: it flags 'Invoice' and 'Ticket review' as names without a verb and suggests verb-first rewrites (e.g. 'Send invoice', 'Review ticket'). It does not flag 'Send reminder'.",
+      "files": ["evals/files/noun-task-names.bpmn"],
+      "assertions": [
+        "The skill runs scripts/validate.py, which reports zero findings",
+        "'Invoice' is flagged as a name without a verb, with a verb + object rewrite suggested",
+        "'Ticket review' is flagged as a name without a verb, with a rewrite such as 'Review ticket'",
+        "'Send reminder' is not flagged",
+        "Events are not flagged for naming",
+        "The two findings are under 'Should Fix' and end with (NM-002)"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Audit this BPMN before I share it with the team: ../bpmn/templates/purchase-approval.bpmn",
+      "expected_output": "The validator finds nothing and every task name starts with a verb. The report says no issues were found, with the '✅ No issues found' verdict, and does not offer a fix.",
+      "files": ["../bpmn/templates/purchase-approval.bpmn"],
+      "assertions": [
+        "The report contains no 'Must Fix', 'Should Fix' or 'Consider Improving' sections",
+        "The verdict line is the '✅ No issues found — diagram is clean and ready to share' option",
+        "The report does not include the offer to fix the diagram"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Validate evals/files/malformed.bpmn",
+      "expected_output": "The validator exits with code 2. The skill tells the user in plain words that the file is not a valid BPMN diagram (it is cut off: the XML is incomplete) and stops, without inventing findings.",
+      "files": ["evals/files/malformed.bpmn"],
+      "assertions": [
+        "The skill reports that the file could not be read as a BPMN diagram",
+        "The explanation is in plain words (for example, the file is incomplete or cut off)",
+        "No rule findings and no verdict are produced"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Review and fix evals/files/dead-end.bpmn",
+      "expected_output": "The report has a Must Fix block: after the 'Serious?' decision, the 'Escalate complaint' path stops without reaching an end. The skill offers to regenerate the diagram with /bpmn. When the user accepts, it re-runs the validator on the corrected file and confirms the error is gone before saying it is fixed.",
+      "files": ["evals/files/dead-end.bpmn"],
+      "assertions": [
+        "The report names 'Escalate complaint' as the step where the flow stops (STR-006) under 'Must Fix'",
+        "The fix suggests connecting 'Escalate complaint' onward, for example to an end event or back into the main flow",
+        "The report ends with the offer to fix the diagram using /bpmn",
+        "If the fix is carried out, scripts/validate.py is run on the new file and shows no errors before the skill reports success"
+      ]
+    }
+  ]
+}

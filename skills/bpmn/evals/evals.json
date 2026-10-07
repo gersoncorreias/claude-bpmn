@@ -1,0 +1,62 @@
+{
+  "skill_name": "bpmn",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a BPMN for our employee onboarding. HR prepares the contract. Once it is signed, IT sets up the laptop and creates accounts at the same time. When both are done, the manager schedules the first-week plan, and onboarding is complete.",
+      "expected_output": "The skill writes ./employee-onboarding.bpmn (or a similar name) with the Write tool, without printing the XML in chat. It has one pool with lanes for HR, IT and Manager, a parallel split after the contract step and a parallel join before the manager's step, and a shape and an edge for every element and flow. It runs the bpmn-coach validator on the file and confirms with a single 'Saved:' line.",
+      "files": [],
+      "assertions": [
+        "The diagram is saved with the Write tool to a .bpmn file in the working directory",
+        "The full XML is not printed in the chat response",
+        "The file has lanes named for HR, IT and Manager (or close equivalents)",
+        "Laptop setup and account creation sit between a parallelGateway split and a parallelGateway join",
+        "Every sequenceFlow has a matching BPMNEdge, and every flow node has a BPMNShape",
+        "The skill runs ../bpmn-coach/scripts/validate.py on the new file and it reports no errors or warnings",
+        "The response confirms with a single line in the form 'Saved: ./<name>.bpmn — N tasks/gateways/events, N lanes'"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Describe templates/purchase-approval.bpmn for me. What does this process show?",
+      "expected_output": "The skill runs in interpret mode (Step 0) and writes no new file. It returns the structured prose format: the process name 'Purchase Request', the roles Employee, Manager and Procurement, a short flow summary, steps by role, the 'Approved?' exclusive decision (Yes leads to procurement, No ends with the request rejected), the parallel 'Create purchase order' / 'Reserve budget' branches, the cross-lane handoffs, and the message flows to and from the Supplier pool under Notes.",
+      "files": ["templates/purchase-approval.bpmn"],
+      "assertions": [
+        "No .bpmn or HTML file is written",
+        "The output uses the Step 0 headings: Roles, Flow summary, Steps by role, Decision points, Cross-lane handoffs, Process boundaries",
+        "The roles listed are Employee, Manager and Procurement",
+        "'Approved?' is described as an XOR decision with its Yes and No outcomes",
+        "The parallel split into 'Create purchase order' and 'Reserve budget' is described as AND (both paths taken)",
+        "The handoffs Employee → Manager and Manager → Procurement are listed",
+        "The messages exchanged with the Supplier ('Purchase order', 'Goods and invoice') are mentioned"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use the purchase-approval template to model our travel request process: an employee submits a trip request, their manager approves or rejects it, then the travel desk books flights and the hotel in parallel and sends the itinerary to the travel agency.",
+      "expected_output": "The skill reads templates/purchase-approval.bpmn, keeps its structure (two pools, an approval decision, a parallel split and join, message flows), and renames lanes, steps and labels for travel requests. Nothing about purchase orders or budget remains. The validator reports no findings.",
+      "files": ["templates/purchase-approval.bpmn"],
+      "assertions": [
+        "The skill reads the template file before generating",
+        "The new diagram has an approval decision phrased as a question, with labelled Yes/No paths",
+        "Booking flights and booking the hotel are parallel branches that join again",
+        "An external pool for the travel agency receives a message flow",
+        "No leftover purchase-order wording ('purchase order', 'Reserve budget', 'Supplier') remains in the new file",
+        "The bpmn-coach validator reports no errors or warnings on the new file"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Make a small BPMN for a library book return (patron returns book, librarian checks for damage, damaged → charge fee, otherwise → shelve book) and give me the HTML snippet to embed it.",
+      "expected_output": "The skill writes the .bpmn file and, since the diagram is small, produces the HTML card. The head tags load bpmn-js 18.31.0 for every asset (diagram-js.css, bpmn-js.css, bpmn-font css and the navigated viewer script). The XML is embedded in a template literal with backticks and '${' escaped, and the slug is a valid JavaScript identifier.",
+      "files": [],
+      "assertions": [
+        "A .bpmn file is written with the Write tool",
+        "The HTML head loads diagram-js.css, bpmn-js.css, bpmn-font/css/bpmn.css and bpmn-navigated-viewer.production.min.js, all from bpmn-js@18.31.0",
+        "The [id] placeholder is replaced with a valid JavaScript identifier (no hyphens)",
+        "Any backtick or '${' inside the embedded XML is escaped",
+        "The damage decision is an exclusive gateway named as a question with labelled outgoing paths"
+      ]
+    }
+  ]
+}

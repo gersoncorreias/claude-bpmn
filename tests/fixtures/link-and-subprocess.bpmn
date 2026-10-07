@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Valid patterns that naive checkers flag: a link event pair (the catch has no incoming flow), an expanded
+       sub-process with its own start and end, and a non-interrupting timer boundary event.
+       Expect only DI-001 (no layout). -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Claim received"/>
+    <bpmn:subProcess id="Assess" name="Assess claim">
+      <bpmn:startEvent id="AS" name="Assessment started"/>
+      <bpmn:task id="Inspect" name="Inspect damage"/>
+      <bpmn:endEvent id="AE" name="Assessment done"/>
+      <bpmn:sequenceFlow id="a1" sourceRef="AS" targetRef="Inspect"/>
+      <bpmn:sequenceFlow id="a2" sourceRef="Inspect" targetRef="AE"/>
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Slow" name="3 days passed" attachedToRef="Assess" cancelActivity="false"><bpmn:timerEventDefinition id="T1"/></bpmn:boundaryEvent>
+    <bpmn:task id="Chase" name="Chase assessor"/>
+    <bpmn:endEvent id="CE" name="Assessor chased"/>
+    <bpmn:intermediateThrowEvent id="GoPay" name="To payment"><bpmn:linkEventDefinition id="L1" name="pay"/></bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="FromAssess" name="From assessment"><bpmn:linkEventDefinition id="L2" name="pay"/></bpmn:intermediateCatchEvent>
+    <bpmn:task id="Pay" name="Pay claim"/>
+    <bpmn:endEvent id="E" name="Claim paid"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="Assess"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="Assess" targetRef="GoPay"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="FromAssess" targetRef="Pay"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="Pay" targetRef="E"/>
+    <bpmn:sequenceFlow id="f5" sourceRef="Slow" targetRef="Chase"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="Chase" targetRef="CE"/>
+  </bpmn:process>
+</bpmn:definitions>

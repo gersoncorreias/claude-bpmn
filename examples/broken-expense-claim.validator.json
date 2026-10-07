@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "validator": "1.0.0",
+  "processes": [
+    "Expense Claim"
+  ],
+  "summary": {
+    "ERROR": 1,
+    "WARNING": 1,
+    "INFO": 1
+  },
+  "findings": [
+    {
+      "rule": "STR-006",
+      "severity": "ERROR",
+      "title": "Path stops before reaching an end event",
+      "element_id": "Task_Return",
+      "element_name": "Revise expense claim",
+      "element_type": "task",
+      "lane": "Employee",
+      "pool": "Expense Claim",
+      "message": "This element has no outgoing flow, so the process stops here without reaching an end event.",
+      "before": [
+        "Decision"
+      ],
+      "after": []
+    },
+    {
+      "rule": "GW-003",
+      "severity": "WARNING",
+      "title": "Decision has an unlabelled outgoing path",
+      "element_id": "Gw_Decision",
+      "element_name": "Decision",
+      "element_type": "exclusiveGateway",
+      "lane": "Manager",
+      "pool": "Expense Claim",
+      "message": "2 of 2 outgoing paths have no condition label (Flow_4, Flow_5).",
+      "before": [
+        "Claim review"
+      ],
+      "after": [
+        "Revise expense claim",
+        "Reimburse employee"
+      ]
+    },
+    {
+      "rule": "GW-006",
+      "severity": "INFO",
+      "title": "Decision is not phrased as a question",
+      "element_id": "Gw_Decision",
+      "element_name": "Decision",
+      "element_type": "exclusiveGateway",
+      "lane": "Manager",
+      "pool": "Expense Claim",
+      "message": "Name decisions as a question, e.g. 'Approved?'.",
+      "before": [
+        "Claim review"
+      ],
+      "after": [
+        "Revise expense claim",
+        "Reimburse employee"
+      ]
+    }
+  ],
+  "not_checked": [
+    "NM-002"
+  ]
+}

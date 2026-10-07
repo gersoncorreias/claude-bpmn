@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- "Escalate" is reachable but goes nowhere. Expect STR-006 on Escalate. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Complaint received"/>
+    <bpmn:exclusiveGateway id="G" name="Serious?"/>
+    <bpmn:task id="Reply" name="Send reply"/>
+    <bpmn:task id="Escalate" name="Escalate complaint"/>
+    <bpmn:endEvent id="E" name="Complaint closed"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="G"/>
+    <bpmn:sequenceFlow id="f2" name="No" sourceRef="G" targetRef="Reply"/>
+    <bpmn:sequenceFlow id="f3" name="Yes" sourceRef="G" targetRef="Escalate"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="Reply" targetRef="E"/>
+  </bpmn:process>
+</bpmn:definitions>

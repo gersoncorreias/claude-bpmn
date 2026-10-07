@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Structurally clean, but two task names have no verb ("Invoice", "Ticket review"). The script reports nothing;
+       the skill must flag NM-002 for those two and leave "Send reminder" alone. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Order shipped"/>
+    <bpmn:task id="A" name="Invoice"/>
+    <bpmn:task id="B" name="Ticket review"/>
+    <bpmn:task id="C" name="Send reminder"/>
+    <bpmn:endEvent id="E" name="Payment chased"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="A"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="A" targetRef="B"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="B" targetRef="C"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="C" targetRef="E"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="D"><bpmndi:BPMNPlane id="PL" bpmnElement="P">
+    <bpmndi:BPMNShape id="S_di" bpmnElement="S"><dc:Bounds x="100" y="122" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="A_di" bpmnElement="A"><dc:Bounds x="190" y="100" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="B_di" bpmnElement="B"><dc:Bounds x="340" y="100" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="C_di" bpmnElement="C"><dc:Bounds x="490" y="100" width="100" height="80"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="E_di" bpmnElement="E"><dc:Bounds x="642" y="122" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="f1_di" bpmnElement="f1"><di:waypoint x="136" y="140"/><di:waypoint x="190" y="140"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f2_di" bpmnElement="f2"><di:waypoint x="290" y="140"/><di:waypoint x="340" y="140"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f3_di" bpmnElement="f3"><di:waypoint x="440" y="140"/><di:waypoint x="490" y="140"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f4_di" bpmnElement="f4"><di:waypoint x="590" y="140"/><di:waypoint x="642" y="140"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

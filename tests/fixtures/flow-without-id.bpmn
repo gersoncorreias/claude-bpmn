@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- A sequence flow with no id. Expect SF-002. -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:startEvent id="S" name="Start"/>
+    <bpmn:task id="T" name="Do the work"/>
+    <bpmn:endEvent id="E" name="Done"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="T"/>
+    <bpmn:sequenceFlow sourceRef="T" targetRef="E"/>
+  </bpmn:process>
+</bpmn:definitions>

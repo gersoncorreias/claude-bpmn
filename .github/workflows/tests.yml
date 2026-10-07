@@ -1,0 +1,36 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Shell scripts parse
+        run: bash -n install.sh
+      - name: Install script
+        run: |
+          HOME="$RUNNER_TEMP/home" ./install.sh
+          python "$RUNNER_TEMP/home/.claude/skills/bpmn-coach/scripts/validate.py" --rules
+
+  bpmnio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Every shipped .bpmn parses cleanly in bpmn-moddle
+        working-directory: tests/bpmnio
+        run: npm ci && npm run check

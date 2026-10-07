@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Defs">
+  <!-- Broken references and lane problems. Expect STR-003 (f3 targets Ghost), STR-004 (lane lists Missing),
+       STR-007 (Pay is in no lane), STR-008 (Check is in two lanes), STR-006 on Check (its only exit is broken),
+       and STR-005 on Pay and the end event (nothing leads to them). -->
+  <bpmn:process id="P" isExecutable="false">
+    <bpmn:laneSet id="LS">
+      <bpmn:lane id="L1" name="Clerk"><bpmn:flowNodeRef>S</bpmn:flowNodeRef><bpmn:flowNodeRef>Check</bpmn:flowNodeRef><bpmn:flowNodeRef>Missing</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="L2" name="Finance"><bpmn:flowNodeRef>Check</bpmn:flowNodeRef><bpmn:flowNodeRef>E</bpmn:flowNodeRef></bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="S" name="Invoice received"/>
+    <bpmn:task id="Check" name="Check invoice"/>
+    <bpmn:task id="Pay" name="Pay invoice"/>
+    <bpmn:endEvent id="E" name="Invoice paid"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="S" targetRef="Check"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="Check" targetRef="Ghost"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="Pay" targetRef="E"/>
+  </bpmn:process>
+</bpmn:definitions>
