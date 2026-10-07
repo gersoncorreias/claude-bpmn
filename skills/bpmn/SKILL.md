@@ -1,13 +1,14 @@
 ---
 name: bpmn
-description: "Generates standard BPMN 2.0 XML process diagrams AND interprets existing .bpmn files into structured prose descriptions for other skills. Use to: model a process, create a BPMN diagram, visualize a workflow, document a ticket flow, map a process for process improvement, or export a .bpmn file. Also used to READ and DESCRIBE an existing .bpmn file — returning roles, steps, gateways, and handoffs as structured text that any other skill can consume. Trigger on: 'create a BPMN', 'model this process', 'draw a process diagram', 'generate a .bpmn file', 'visualize this workflow', 'BPMN for', 'process map', 'swimlane diagram', 'flowchart for Camunda', 'bpmn.io', 'interpret this .bpmn', 'describe this .bpmn', 'read this bpmn file', 'what does this bpmn show', 'explain this process diagram', 'summarize this .bpmn for'."
+description: "Generates standard BPMN 2.0 XML process diagrams, including straight from a process-mapping meeting transcript (with evidence quotes, contradictions and open questions for owner sign-off), AND interprets existing .bpmn files into structured prose descriptions for other skills. Use to: model a process, create a BPMN diagram, visualize a workflow, document a ticket flow, map a process for process improvement, or export a .bpmn file. Also used to READ and DESCRIBE an existing .bpmn file — returning roles, steps, gateways, and handoffs as structured text that any other skill can consume. Trigger on: 'map the process from this transcript', 'turn this meeting transcript into a BPMN', 'process mapping session transcript', '.vtt / .srt / meeting notes to BPMN', 'create a BPMN', 'model this process', 'draw a process diagram', 'generate a .bpmn file', 'visualize this workflow', 'BPMN for', 'process map', 'swimlane diagram', 'flowchart for Camunda', 'bpmn.io', 'interpret this .bpmn', 'describe this .bpmn', 'read this bpmn file', 'what does this bpmn show', 'explain this process diagram', 'summarize this .bpmn for'."
 ---
 
 # BPMN 2.0 Diagram Generator
 
-Produces two artefacts per invocation:
+Produces up to three artefacts per invocation:
 1. **A `.bpmn` file** — valid BPMN 2.0 XML with DI coordinates, openable in Camunda / bpmn.io
 2. **An HTML snippet** — self-contained viewer card for embedding in any HTML report
+3. **Mapping notes** (transcript mode only) — every step traced to a quote, plus contradictions and open questions for the process owner
 
 ---
 
@@ -15,6 +16,7 @@ Produces two artefacts per invocation:
 
 | Mode | Trigger | Action |
 |---|---|---|
+| **From meeting transcript** | "Map the process from this transcript" + a `.vtt`, `.srt`, `.txt` or `.md` file, or pasted text | Step T: extract with evidence → model only what was said → write `.bpmn` + mapping notes |
 | **From description** | "Create a BPMN for our support ticket flow" | Generate XML from the described process |
 | **From text steps** | "Convert: Request → Manager approval → Finance → Done" | Parse steps, map to BPMN elements, generate |
 | **From template** | "Use the purchase-approval template" | Load `templates/[name].bpmn` and adapt it |
@@ -105,6 +107,78 @@ Return this exact structure so other skills can parse it reliably:
 5. **Compact DI formatting.** Write each `BPMNShape` and `BPMNEdge` on one line.
 
 Violating any of these rules risks hitting the output limit and truncating the diagram.
+
+---
+
+## Step T — Map a process from a meeting transcript
+
+Use this when the input is a recording transcript or notes from a process-mapping session, interview or walkthrough. The goal is a draft the process owner can check line by line, not a polished guess.
+
+### T1. Read and clean
+
+- Read the file with the Read tool. `.vtt` and `.srt` cues carry a timestamp and usually a speaker (`<v Name>` or `Name:`). Keep both: they are the evidence trail.
+- For `.docx` or `.pdf` transcripts, extract the text first (with whatever document skill is available), then continue.
+- Ignore small talk, scheduling and side topics.
+
+### T2. Scope the process
+
+- Identify **one** process: its trigger (start) and its outcomes (ends). If the session covered several processes, map the one the facilitator named, or ask the user which one before going on.
+- Name the pool after the process, not the meeting.
+
+### T3. Extract, with evidence
+
+Build this table before writing any XML. Each row needs a timestamp and a short quote.
+
+| Element | How to find it |
+|---|---|
+| **Lanes** | Roles or teams, not people. Map each speaker to the role they speak for ("Priya (Support Agent)" → lane "Support Agent"). Never put a person's name in the diagram |
+| **Tasks** | What someone does: "I check…", "then we send…". Write each as verb + object |
+| **Decisions** | "if", "depends on", "unless", "only when", thresholds. Name them as questions; label every outgoing path with its condition |
+| **Waits** | Batches, schedules, SLAs ("we run refunds on Tuesdays and Fridays") → intermediate timer event |
+| **Handoffs** | "it goes to…", "ends up with us" → the flow crosses lanes |
+| **Ends** | "closed", "done", "out of our hands" → end events named for the outcome |
+
+### T4. Model only what was said
+
+- **Do not invent paths.** If a branch was raised but its outcome never agreed ("I'd probably… we don't have a rule for it"), end that branch with an end event that says so, for example "Rejected by lead (next step open)", and add it to the open questions.
+- **Contradictions are findings, not choices.** When speakers disagree (two different approval limits, two orders of steps), keep the diagram neutral ("Over approval limit?" with no figure) and record both versions with timestamps.
+- **Mark inferences.** If you add something nobody said, such as a merge that two statements imply, list it under "Inferred, not said".
+- Leave out things mentioned only as background (month-end checks, other teams' processes) and list them under "Not modelled".
+
+### T5. Generate and check
+
+Build the XML with Steps 2–3 below, including the validator self-check. A transcript draft should still have zero ERRORs: unresolved branches end in an explicit "open" end event rather than a dead end.
+
+### T6. Write the mapping notes
+
+Save `./{process-name}-mapping-notes.md` next to the `.bpmn` with the Write tool:
+
+```markdown
+# {Process name} — mapping notes
+
+**Source:** {file} ({session type}, {N} participants)
+**Diagram:** {process-name}.bpmn — {N} tasks/events in {N} lanes, validator: {result}
+**Status:** draft for owner review. Nothing below is confirmed until the process owner signs off.
+
+## Lanes
+| Lane | Spoken for by |
+
+## Steps and evidence
+| Step (diagram) | Lane | Evidence (timestamp, speaker: "quote") |
+
+## Inferred, not said
+## Contradictions
+## Open questions for the process owner   (numbered, each with the timestamp that raised it)
+## Not modelled
+```
+
+Keep quotes short and exact. Use speaker names only in the notes, which go to the session participants, never in the diagram.
+
+### T7. Confirm
+
+Reply with the two file paths, the validator result, and the open questions as a short numbered list. These are what the user takes back to the process owner.
+
+A worked example (transcript, diagram and notes) is in the repository's `examples/transcript-to-bpmn/` folder.
 
 ---
 

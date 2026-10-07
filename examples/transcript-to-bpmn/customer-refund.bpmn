@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://example.com/bpmn" id="Definitions_CustomerRefund">
+  <!-- Mapped from examples/transcript-to-bpmn/refund-mapping-session.vtt. Open questions are in refund-mapping-notes.md. -->
+  <bpmn:collaboration id="Collab_CustomerRefund">
+    <bpmn:participant id="Pool_Refund" name="Customer Refund" processRef="Process_Refund"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Refund" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Process_Refund">
+      <bpmn:lane id="Lane_Agent" name="Support Agent">
+        <bpmn:flowNodeRef>Start_Request</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Policy</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Explain</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Declined</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Limit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Confirm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Completed</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Lead" name="Support Lead">
+        <bpmn:flowNodeRef>Task_Review</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_Approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Open</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Finance" name="Finance">
+        <bpmn:flowNodeRef>Gw_Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Timer_Run</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Issue</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Request" name="Refund requested"><bpmn:outgoing>Flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:task id="Task_Check" name="Check order against refund policy"><bpmn:incoming>Flow_1</bpmn:incoming><bpmn:outgoing>Flow_2</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_Policy" name="Within policy?"><bpmn:incoming>Flow_2</bpmn:incoming><bpmn:outgoing>Flow_3</bpmn:outgoing><bpmn:outgoing>Flow_5</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Explain" name="Explain decision to customer"><bpmn:incoming>Flow_3</bpmn:incoming><bpmn:outgoing>Flow_4</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Declined" name="Refund declined"><bpmn:incoming>Flow_4</bpmn:incoming></bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gw_Limit" name="Over approval limit?"><bpmn:incoming>Flow_5</bpmn:incoming><bpmn:outgoing>Flow_6</bpmn:outgoing><bpmn:outgoing>Flow_7</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Confirm" name="Confirm refund to customer"><bpmn:incoming>Flow_13</bpmn:incoming><bpmn:outgoing>Flow_14</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="End_Completed" name="Refund completed"><bpmn:incoming>Flow_14</bpmn:incoming></bpmn:endEvent>
+    <bpmn:task id="Task_Review" name="Review refund request"><bpmn:incoming>Flow_6</bpmn:incoming><bpmn:outgoing>Flow_8</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_Approved" name="Approved by lead?"><bpmn:incoming>Flow_8</bpmn:incoming><bpmn:outgoing>Flow_9</bpmn:outgoing><bpmn:outgoing>Flow_10</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_Open" name="Rejected by lead (next step open)"><bpmn:incoming>Flow_9</bpmn:incoming></bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gw_Merge" name=""><bpmn:incoming>Flow_7</bpmn:incoming><bpmn:incoming>Flow_10</bpmn:incoming><bpmn:outgoing>Flow_11</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="Timer_Run" name="Next refund run (Tue / Fri)"><bpmn:incoming>Flow_11</bpmn:incoming><bpmn:outgoing>Flow_12</bpmn:outgoing><bpmn:timerEventDefinition id="Timer_Timer_Run"/></bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_Issue" name="Issue refund to original payment method"><bpmn:incoming>Flow_12</bpmn:incoming><bpmn:outgoing>Flow_13</bpmn:outgoing></bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_Request" targetRef="Task_Check"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Check" targetRef="Gw_Policy"/>
+    <bpmn:sequenceFlow id="Flow_3" name="No" sourceRef="Gw_Policy" targetRef="Task_Explain"/>
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_Explain" targetRef="End_Declined"/>
+    <bpmn:sequenceFlow id="Flow_5" name="Yes" sourceRef="Gw_Policy" targetRef="Gw_Limit"/>
+    <bpmn:sequenceFlow id="Flow_6" name="Yes" sourceRef="Gw_Limit" targetRef="Task_Review"/>
+    <bpmn:sequenceFlow id="Flow_7" name="No" sourceRef="Gw_Limit" targetRef="Gw_Merge"/>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_Review" targetRef="Gw_Approved"/>
+    <bpmn:sequenceFlow id="Flow_9" name="No" sourceRef="Gw_Approved" targetRef="End_Open"/>
+    <bpmn:sequenceFlow id="Flow_10" name="Yes" sourceRef="Gw_Approved" targetRef="Gw_Merge"/>
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="Gw_Merge" targetRef="Timer_Run"/>
+    <bpmn:sequenceFlow id="Flow_12" sourceRef="Timer_Run" targetRef="Task_Issue"/>
+    <bpmn:sequenceFlow id="Flow_13" sourceRef="Task_Issue" targetRef="Task_Confirm"/>
+    <bpmn:sequenceFlow id="Flow_14" sourceRef="Task_Confirm" targetRef="End_Completed"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_CustomerRefund">
+    <bpmndi:BPMNPlane id="Plane_CustomerRefund" bpmnElement="Collab_CustomerRefund">
+      <bpmndi:BPMNShape id="Pool_Refund_di" bpmnElement="Pool_Refund" isHorizontal="true"><dc:Bounds x="160" y="80" width="1660" height="520"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Agent_di" bpmnElement="Lane_Agent" isHorizontal="true"><dc:Bounds x="190" y="80" width="1630" height="200"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Lead_di" bpmnElement="Lane_Lead" isHorizontal="true"><dc:Bounds x="190" y="280" width="1630" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Finance_di" bpmnElement="Lane_Finance" isHorizontal="true"><dc:Bounds x="190" y="420" width="1630" height="180"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Request_di" bpmnElement="Start_Request"><dc:Bounds x="262" y="162" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Check_di" bpmnElement="Task_Check"><dc:Bounds x="380" y="140" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Policy_di" bpmnElement="Gw_Policy" isMarkerVisible="true"><dc:Bounds x="555" y="155" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="500" y="135" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Explain_di" bpmnElement="Task_Explain"><dc:Bounds x="680" y="85" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Declined_di" bpmnElement="End_Declined"><dc:Bounds x="862" y="107" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Limit_di" bpmnElement="Gw_Limit" isMarkerVisible="true"><dc:Bounds x="705" y="200" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="650" y="180" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Confirm_di" bpmnElement="Task_Confirm"><dc:Bounds x="1580" y="185" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Completed_di" bpmnElement="End_Completed"><dc:Bounds x="1762" y="207" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Review_di" bpmnElement="Task_Review"><dc:Bounds x="830" y="310" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Approved_di" bpmnElement="Gw_Approved" isMarkerVisible="true"><dc:Bounds x="1005" y="325" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="950" y="305" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Open_di" bpmnElement="End_Open"><dc:Bounds x="1162" y="332" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Merge_di" bpmnElement="Gw_Merge" isMarkerVisible="true"><dc:Bounds x="1155" y="485" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Timer_Run_di" bpmnElement="Timer_Run"><dc:Bounds x="1312" y="492" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Issue_di" bpmnElement="Task_Issue"><dc:Bounds x="1430" y="470" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1"><di:waypoint x="298" y="180"/><di:waypoint x="380" y="180"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2"><di:waypoint x="480" y="180"/><di:waypoint x="555" y="180"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3"><di:waypoint x="580" y="155"/><di:waypoint x="580" y="125"/><di:waypoint x="680" y="125"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4"><di:waypoint x="780" y="125"/><di:waypoint x="862" y="125"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5"><di:waypoint x="580" y="205"/><di:waypoint x="580" y="225"/><di:waypoint x="705" y="225"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6"><di:waypoint x="755" y="225"/><di:waypoint x="880" y="225"/><di:waypoint x="880" y="310"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7"><di:waypoint x="730" y="250"/><di:waypoint x="730" y="555"/><di:waypoint x="1180" y="555"/><di:waypoint x="1180" y="535"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8"><di:waypoint x="930" y="350"/><di:waypoint x="1005" y="350"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9"><di:waypoint x="1055" y="350"/><di:waypoint x="1162" y="350"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10"><di:waypoint x="1030" y="375"/><di:waypoint x="1030" y="510"/><di:waypoint x="1155" y="510"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11"><di:waypoint x="1205" y="510"/><di:waypoint x="1312" y="510"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12"><di:waypoint x="1348" y="510"/><di:waypoint x="1430" y="510"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13_di" bpmnElement="Flow_13"><di:waypoint x="1530" y="510"/><di:waypoint x="1555" y="510"/><di:waypoint x="1555" y="225"/><di:waypoint x="1580" y="225"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14_di" bpmnElement="Flow_14"><di:waypoint x="1680" y="225"/><di:waypoint x="1762" y="225"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

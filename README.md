@@ -1,12 +1,23 @@
 # BPMN for Claude Code
 
-Three [Claude Code](https://code.claude.com) skills for process mapping. Describe a process in plain language and get a standard BPMN 2.0 diagram. Check it against the notation rules. Hand it to stakeholders in FigJam.
+Three [Claude Code](https://code.claude.com) skills that turn process-mapping sessions into standard BPMN 2.0 diagrams. Give Claude the meeting transcript and get back a diagram plus mapping notes: every step traced to a quote, contradictions between speakers flagged, and open questions listed for the process owner. Then check the diagram against the notation rules and hand it to stakeholders in FigJam.
 
-![A purchase approval process generated as BPMN 2.0 and rendered in bpmn.io](docs/images/purchase-approval.png)
+```
+/bpmn Map the refund process from this transcript: refund-mapping-session.vtt
+```
+
+![A customer refund process mapped from a meeting transcript, rendered in bpmn.io](docs/images/transcript-customer-refund.png)
+
+That diagram came from a [three-minute fictional session](examples/transcript-to-bpmn/refund-mapping-session.vtt). The [mapping notes](examples/transcript-to-bpmn/customer-refund-mapping-notes.md) show what the skill does with what it hears:
+
+- **Every step has evidence.** "Issue refund to original payment method" links to 00:02:09, Dana: "we issue the refund to the original payment method".
+- **It flags contradictions instead of picking a side.** The agent said the approval limit is $200 and the lead said $250, so the diagram asks "Over approval limit?" and the notes record both.
+- **It leaves gaps open instead of inventing them.** Nobody agreed what happens when the lead rejects a refund, so that path ends in "Rejected by lead (next step open)" and becomes question 1 for the process owner.
+- **Roles, not people.** Speakers become lanes (Support Agent, Support Lead, Finance). Names stay in the notes, which go back to the participants for sign-off.
 
 | Skill | What it does |
 |---|---|
-| [`bpmn`](skills/bpmn/SKILL.md) | Turns a description into a `.bpmn` file that opens in [bpmn.io](https://demo.bpmn.io) and Camunda Modeler, with an optional HTML viewer card. Also reads an existing `.bpmn` file back into structured prose: roles, steps, decisions, handoffs |
+| [`bpmn`](skills/bpmn/SKILL.md) | Turns a mapping-session transcript (`.vtt`, `.srt`, `.txt`, `.md`) or a plain description into a `.bpmn` file that opens in [bpmn.io](https://demo.bpmn.io) and Camunda Modeler. Transcript mode also writes the mapping notes. It can read an existing `.bpmn` back into structured prose: roles, steps, decisions, handoffs |
 | [`bpmn-coach`](skills/bpmn-coach/SKILL.md) | Validates a diagram and explains every problem in plain business language, ranked Must fix / Should fix / Consider. The checks run in a [standard-library Python script](skills/bpmn-coach/scripts/validate.py), so the same file always gets the same findings |
 | [`bpmn-to-figjam`](skills/bpmn-to-figjam/SKILL.md) | Draws a `.bpmn` file in a FigJam board through the Figma MCP server, styled like bpmn.io, inside its own section so existing board content is never touched |
 
@@ -25,6 +36,8 @@ cd claude-bpmn
 Then, in Claude Code:
 
 ```
+/bpmn Map the onboarding process from ./onboarding-session.vtt
+
 /bpmn Create a BPMN for our employee onboarding: HR prepares the contract, IT sets up the laptop and
 accounts in parallel, then the manager schedules the first week.
 
@@ -68,7 +81,8 @@ Valid patterns that simple checkers get wrong are handled correctly: link events
 ## What it will and won't do
 
 - **Descriptive diagrams, not executable ones.** Generated processes are `isExecutable="false"`, for documentation, analysis and stakeholder review. Nothing here deploys to a BPMN engine.
-- **Files stay local.** `bpmn` and `bpmn-coach` read and write files on your machine. Only `bpmn-to-figjam` sends anything out, and only to the Figma board you name.
+- **A draft, not a verdict.** A transcript only holds what people said in the room. The mapping notes exist so the process owner can confirm or correct each step before anyone relies on the diagram.
+- **Files stay local.** `bpmn` and `bpmn-coach` read and write files on your machine. Transcripts are read by Claude in your session like any other file, so handle recordings of colleagues according to your company's policy. Only `bpmn-to-figjam` sends anything out, and only to the Figma board you name.
 - **FigJam renders are approximate.** FigJam has no BPMN shapes, so events, gateways and markers are drawn with FigJam's basic shapes and connectors. Expanded sub-processes are supported one level deep.
 - **Layout is generated, not designed.** `bpmn` places elements on a grid. Complex diagrams may need a tidy-up in bpmn.io or Camunda Modeler before you present them.
 

@@ -1,0 +1,57 @@
+WEBVTT
+
+NOTE Fictional process-mapping session, written as an example for the bpmn skill. Names and figures are invented.
+
+00:00:04.000 --> 00:00:12.000
+<v Facilitator>Thanks for joining. Today we only want the customer refund process, from the moment a customer asks for money back to the moment it lands in their account.
+
+00:00:13.000 --> 00:00:21.000
+<v Priya (Support Agent)>Okay. So it starts when a refund request comes in. Most of them are email, some come through chat. Either way it lands in my queue.
+
+00:00:22.000 --> 00:00:34.000
+<v Priya (Support Agent)>First thing I do is open the order and check it against the refund policy. Thirty days, item not used, that kind of thing.
+
+00:00:35.000 --> 00:00:41.000
+<v Facilitator>And if it doesn't meet the policy?
+
+00:00:42.000 --> 00:00:52.000
+<v Priya (Support Agent)>Then I write back and explain why we can't refund it. That's the end of it, the request is closed as declined.
+
+00:00:53.000 --> 00:01:05.000
+<v Priya (Support Agent)>If it's within policy, it depends on the amount. Anything over two hundred dollars I can't approve myself, it goes to Marco.
+
+00:01:06.000 --> 00:01:14.000
+<v Marco (Support Lead)>Two hundred and fifty, actually. We raised it in the spring.
+
+00:01:15.000 --> 00:01:19.000
+<v Priya (Support Agent)>Oh. Nobody told the night shift that, then.
+
+00:01:20.000 --> 00:01:24.000
+<v Facilitator>Noted, we'll come back to the limit. Marco, what do you do when one reaches you?
+
+00:01:25.000 --> 00:01:38.000
+<v Marco (Support Lead)>I review it, look at the customer history, and approve it. Honestly I approve almost all of them.
+
+00:01:39.000 --> 00:01:44.000
+<v Facilitator>And the ones you don't approve?
+
+00:01:45.000 --> 00:01:56.000
+<v Marco (Support Lead)>Hm. I'd probably talk to the customer myself, or push it back to Priya. It doesn't happen often enough that we have a rule for it.
+
+00:01:57.000 --> 00:02:08.000
+<v Dana (Finance)>Whatever gets approved, by Priya or by Marco, ends up with us. We don't refund one by one. We run refunds in a batch, Tuesdays and Fridays.
+
+00:02:09.000 --> 00:02:16.000
+<v Dana (Finance)>On the run, we issue the refund to the original payment method. Then it's out of our hands.
+
+00:02:17.000 --> 00:02:27.000
+<v Priya (Support Agent)>And once Finance has issued it, I send the customer a confirmation that the refund is on its way. Then I close the ticket as completed.
+
+00:02:28.000 --> 00:02:35.000
+<v Facilitator>Does anyone check that the money actually arrived?
+
+00:02:36.000 --> 00:02:42.000
+<v Dana (Finance)>Not really. If it bounces we'd see it in the reconciliation at month end.
+
+00:02:43.000 --> 00:02:50.000
+<v Facilitator>Okay. Let me play this back as a diagram and send it to you all to check.

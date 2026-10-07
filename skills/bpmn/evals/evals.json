@@ -20,7 +20,9 @@
       "id": 2,
       "prompt": "Describe templates/purchase-approval.bpmn for me. What does this process show?",
       "expected_output": "The skill runs in interpret mode (Step 0) and writes no new file. It returns the structured prose format: the process name 'Purchase Request', the roles Employee, Manager and Procurement, a short flow summary, steps by role, the 'Approved?' exclusive decision (Yes leads to procurement, No ends with the request rejected), the parallel 'Create purchase order' / 'Reserve budget' branches, the cross-lane handoffs, and the message flows to and from the Supplier pool under Notes.",
-      "files": ["templates/purchase-approval.bpmn"],
+      "files": [
+        "templates/purchase-approval.bpmn"
+      ],
       "assertions": [
         "No .bpmn or HTML file is written",
         "The output uses the Step 0 headings: Roles, Flow summary, Steps by role, Decision points, Cross-lane handoffs, Process boundaries",
@@ -35,7 +37,9 @@
       "id": 3,
       "prompt": "Use the purchase-approval template to model our travel request process: an employee submits a trip request, their manager approves or rejects it, then the travel desk books flights and the hotel in parallel and sends the itinerary to the travel agency.",
       "expected_output": "The skill reads templates/purchase-approval.bpmn, keeps its structure (two pools, an approval decision, a parallel split and join, message flows), and renames lanes, steps and labels for travel requests. Nothing about purchase orders or budget remains. The validator reports no findings.",
-      "files": ["templates/purchase-approval.bpmn"],
+      "files": [
+        "templates/purchase-approval.bpmn"
+      ],
       "assertions": [
         "The skill reads the template file before generating",
         "The new diagram has an approval decision phrased as a question, with labelled Yes/No paths",
@@ -56,6 +60,28 @@
         "The [id] placeholder is replaced with a valid JavaScript identifier (no hyphens)",
         "Any backtick or '${' inside the embedded XML is escaped",
         "The damage decision is an exclusive gateway named as a question with labelled outgoing paths"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Here's the transcript from yesterday's process-mapping session: evals/files/refund-mapping-session.vtt. Map the refund process from it.",
+      "expected_output": "The skill uses transcript mode (Step T). It writes a .bpmn with lanes Support Agent, Support Lead and Finance (roles, no personal names), the policy and approval-limit decisions with labelled paths, a timer event for the Tuesday/Friday refund run, and a merge before it. The lead-rejection branch ends in an explicit 'open' end event rather than an invented path. It also writes mapping notes that trace every step to a timestamped quote, record the $200 vs $250 contradiction, and list open questions. The validator reports no errors.",
+      "files": [
+        "evals/files/refund-mapping-session.vtt"
+      ],
+      "assertions": [
+        "Two files are written: a .bpmn diagram and a *-mapping-notes.md file",
+        "The lanes are Support Agent, Support Lead and Finance; the names Priya, Marco and Dana do not appear anywhere in the .bpmn file",
+        "There is an exclusive decision for the refund policy and one for the approval limit, each phrased as a question with labelled outgoing paths",
+        "The approval-limit decision does not state $200 or $250 in the diagram",
+        "The Tuesday/Friday batch is modelled as an intermediate timer event before the Finance refund task",
+        "The branch where the lead does not approve ends in an end event that says the next step is open or undefined; no invented follow-up task is added",
+        "The mapping notes contain a steps table where every step has a timestamp and a quote from the transcript",
+        "The mapping notes record the $200 vs $250 approval-limit contradiction with both timestamps",
+        "The mapping notes list the lead-rejection gap as an open question for the process owner",
+        "Month-end reconciliation is listed as not modelled rather than added to the diagram",
+        "The skill runs the bpmn-coach validator on the .bpmn and it reports no errors",
+        "The final reply lists the open questions as a short numbered list"
       ]
     }
   ]

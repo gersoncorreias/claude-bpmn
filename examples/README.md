@@ -1,6 +1,30 @@
 # Examples
 
-## 1. Validate a flawed diagram
+## 1. Map a process from a meeting transcript
+
+[`transcript-to-bpmn/refund-mapping-session.vtt`](transcript-to-bpmn/refund-mapping-session.vtt) is a short fictional mapping session. A support agent, a support lead and a finance analyst walk a facilitator through customer refunds.
+
+**Ask Claude:**
+
+```
+/bpmn Map the refund process from examples/transcript-to-bpmn/refund-mapping-session.vtt
+```
+
+**You get two files:**
+
+- [`customer-refund.bpmn`](transcript-to-bpmn/customer-refund.bpmn), with 0 validator findings:
+
+  ![Customer refund diagram mapped from the transcript](../docs/images/transcript-customer-refund.png)
+
+- [`customer-refund-mapping-notes.md`](transcript-to-bpmn/customer-refund-mapping-notes.md), the part a process owner can check:
+  - a steps table with a timestamped quote for every element
+  - one inference, marked as such (the merge before the refund run)
+  - the $200 vs $250 approval-limit contradiction, with both timestamps
+  - four open questions, starting with the one nobody could answer: what happens when the lead rejects a refund?
+
+**What the skill does not do:** guess. The lead-rejection path ends in "Rejected by lead (next step open)" instead of an invented step. Month-end reconciliation was mentioned but is not part of the flow, so it is listed under "Not modelled".
+
+## 2. Validate a flawed diagram
 
 [`broken-expense-claim.bpmn`](broken-expense-claim.bpmn) is a small expense-claim process with three deliberate mistakes. Here it is in bpmn.io:
 
@@ -60,7 +84,7 @@ The full JSON, with lane, pool and neighbouring steps for each finding, is in [`
 
 The exact wording varies from run to run. The findings do not, because they come from the script.
 
-## 2. Generate a diagram
+## 3. Generate a diagram from a description
 
 **Ask Claude:**
 
@@ -76,7 +100,7 @@ The bundled template [`purchase-approval.bpmn`](../skills/bpmn/templates/purchas
 
 Before confirming, the skill runs the validator on its own output and fixes anything it finds.
 
-## 3. Read a diagram back
+## 4. Read a diagram back
 
 ```
 /bpmn Describe skills/bpmn/templates/it-helpdesk-ticket.bpmn
@@ -86,7 +110,7 @@ This returns structured prose: roles, steps by role, decisions, handoffs between
 
 ![IT helpdesk ticket diagram with an SLA timer and a loop back](../docs/images/it-helpdesk-ticket.png)
 
-## 4. Render it in FigJam
+## 5. Render it in FigJam
 
 ```
 /bpmn-to-figjam skills/bpmn/templates/purchase-approval.bpmn https://www.figma.com/board/<fileKey>/<name>

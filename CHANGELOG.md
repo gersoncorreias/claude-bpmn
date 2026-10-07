@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — 2026-10-07
+
+Map processes straight from meeting transcripts.
+
+- `bpmn` has a transcript mode (Step T). Give it a `.vtt`, `.srt`, `.txt` or `.md` transcript of a process-mapping session and it writes the `.bpmn` plus `{process}-mapping-notes.md`. The notes contain a steps table with a timestamped quote for each element, inferences marked as such, contradictions between speakers, open questions for the process owner, and what was mentioned but not modelled.
+- In transcript mode, speakers become role lanes; personal names stay out of the diagram. Branches whose outcome was never agreed end in an explicit "next step open" end event instead of an invented path, so drafts still pass the validator with zero errors.
+- Worked example in `examples/transcript-to-bpmn/` (fictional refund session, diagram, notes), and a new eval for the mode.
+
 ## 1.0.0 — 2026-10-07
 
 First public release.
