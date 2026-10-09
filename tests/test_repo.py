@@ -88,6 +88,18 @@ class EvalTests(unittest.TestCase):
                 self.assertTrue(os.path.exists(os.path.join(SKILLS, name, "evals", "evals.json")))
 
 
+class TextFileTests(unittest.TestCase):
+    def test_no_control_characters(self):
+        # Catches escape-sequence accidents such as "\b" turning into a backspace in a doc.
+        bad = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+        for path in repo_files():
+            with open(path, encoding="utf-8") as fh:
+                text = fh.read()
+            m = bad.search(text)
+            with self.subTest(file=os.path.relpath(path, ROOT)):
+                self.assertIsNone(m, "control character %r at offset %s" % (m.group(0), m.start()) if m else "")
+
+
 class NoRealDataTests(unittest.TestCase):
     def test_no_banned_terms(self):
         for path in repo_files():

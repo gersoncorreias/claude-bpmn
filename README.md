@@ -23,32 +23,89 @@ That diagram came from a [three-minute fictional session](examples/transcript-to
 
 The skills work together. `bpmn` checks its own output with `bpmn-coach` before saving. `bpmn-coach` can ask `bpmn` to regenerate a corrected diagram, and the result is checked again.
 
-## Quick start
+## Get started
 
-You need Claude Code and Python 3.9 or newer. `bpmn-to-figjam` also needs a connected [Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559).
+### 1. Check what you need
+
+- [Claude Code](https://code.claude.com), signed in.
+- Python 3.9 or newer (`python --version`). The skills use it for the validator.
+- Optional: a connected [Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559), only for `bpmn-to-figjam`.
+
+### 2. Install the skills
+
+**macOS, Linux, or Windows with Git Bash:**
 
 ```bash
 git clone https://github.com/gersoncorreias/claude-bpmn.git
 cd claude-bpmn
-./install.sh            # installs the three skills into ~/.claude/skills/
+./install.sh
 ```
 
-Then, in Claude Code:
+**Windows PowerShell:**
+
+```powershell
+git clone https://github.com/gersoncorreias/claude-bpmn.git
+cd claude-bpmn
+$dest = "$env:USERPROFILE\.claude\skills"
+New-Item -ItemType Directory -Force $dest | Out-Null
+Copy-Item -Recurse -Force skills\bpmn, skills\bpmn-coach, skills\bpmn-to-figjam $dest
+```
+
+Both copy three folders into `~/.claude/skills/`, which makes the skills available in every project. To install for one project only, run `./install.sh --project <dir>`.
+
+### 3. Check that it worked
+
+```bash
+python ~/.claude/skills/bpmn-coach/scripts/validate.py ~/.claude/skills/bpmn/templates/purchase-approval.bpmn --format text
+```
+
+You should see `0 error(s), 0 warning(s), 0 info`. Then **start a new Claude Code session**, so it loads the skills, and type `/bpmn`. The skill should appear in the list.
+
+### 4. Try the bundled example
+
+From the `claude-bpmn` folder, in a new Claude Code session:
 
 ```
-/bpmn Map the onboarding process from ./onboarding-session.vtt
+/bpmn Map the refund process from examples/transcript-to-bpmn/refund-mapping-session.vtt
+```
 
+You get two files in the current folder:
+
+- `customer-refund.bpmn`. Open it at [demo.bpmn.io](https://demo.bpmn.io) (drag the file onto the page) or in Camunda Modeler.
+- `customer-refund-mapping-notes.md`, with the evidence for each step, the contradictions and the open questions.
+
+Compare them with the reference output in [`examples/transcript-to-bpmn/`](examples/transcript-to-bpmn/). The wording will differ from run to run; the structure should match.
+
+### 5. Map one of your own sessions
+
+1. **Record the session with everyone's consent**, and download the transcript. Teams and Zoom both export `.vtt` files; a plain-text transcript or notes also work.
+2. Keep it to **one process per session** where you can. If several are discussed, the skill asks which one to map.
+3. Run `/bpmn Map the <name> process from <path to transcript>`.
+4. **Send the mapping notes to the participants and the process owner.** The diagram is a draft until they confirm the open questions.
+5. After changes, check the diagram again with `/bpmn-coach validate <file>.bpmn`, and share it with `/bpmn-to-figjam <file>.bpmn <FigJam board URL>`.
+
+You can also describe a process directly, with no transcript:
+
+```
 /bpmn Create a BPMN for our employee onboarding: HR prepares the contract, IT sets up the laptop and
 accounts in parallel, then the manager schedules the first week.
-
-/bpmn-coach validate ./employee-onboarding.bpmn
-
-/bpmn-to-figjam ./employee-onboarding.bpmn https://www.figma.com/board/<fileKey>/<name>
 ```
 
-On Windows without bash, copy the three folders in `skills/` into `%USERPROFILE%\.claude\skills\`.
-
 **[examples/README.md](examples/README.md)** walks through each skill with real output, including a flawed diagram and the coach's report on it.
+
+### Update or remove
+
+- **Update:** `git pull` in the `claude-bpmn` folder, then run the install step again. Use `./install.sh --link` once, and every later `git pull` updates the skills on its own (macOS and Linux).
+- **Remove:** delete the `bpmn`, `bpmn-coach` and `bpmn-to-figjam` folders from `~/.claude/skills/`.
+
+### If something doesn't work
+
+| Symptom | Fix |
+|---|---|
+| `/bpmn` is not in the list | Start a new Claude Code session; skills load at session start. Check that `~/.claude/skills/bpmn/SKILL.md` exists |
+| `python: command not found` | Install Python 3.9+, or use `python3`. Without Python the coach still works, but checks by hand and says so |
+| The diagram opens but shapes overlap | The layout is generated. Open the file in bpmn.io or Camunda Modeler and drag things into place; the process logic is unaffected |
+| `/bpmn-to-figjam` says no Figma tool is available | Connect Figma's MCP server in Claude Code, then retry |
 
 ## The validator on its own
 
@@ -94,6 +151,10 @@ cd tests/bpmnio && npm ci && npm run check           # every shipped .bpmn parse
 ```
 
 `tests/fixtures/` has one deliberately broken diagram per rule family. `expected.json` lists the exact findings each must produce, and a test fails if any rule has no fixture. Each skill also has `evals/evals.json` with prompts and assertions for checking the skill's behaviour in Claude Code. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## About
+
+Built by [Gerson Correia](https://gersoncorreia.com), a delivery consultant for remote software teams. I run process-mapping sessions with the people who do the work, and built these skills so the map comes out of the session instead of a week of follow-up. Questions and ideas are welcome in [Issues](https://github.com/gersoncorreias/claude-bpmn/issues) or on [LinkedIn](https://www.linkedin.com/in/gerson-correia).
 
 ## License
 
